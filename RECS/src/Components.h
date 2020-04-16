@@ -1,6 +1,9 @@
 #ifndef COMPONENTS_H
 #define COMPONENTS_H
 
+#include "Entities.h"
+#include <unordered_map>
+
 namespace RECS {
 	class IComponent
 	{
@@ -17,17 +20,17 @@ namespace RECS {
 			{
 				// TO DO: initialize container with ComponentTypeName
 			}
-			std::unordered_map</*EntityID*/int, ComponentTypeName> container;
+			std::unordered_map<EntityID, ComponentTypeName> container;
 		};
 		// componentTypeName
 		// TO DO: make mechanism to provide component type name
-		// TO DO: create Entity ID in entity class
+		// TO DO: create Entity ID in entity class | checked
 		// TO DO: create AddComponent and DeleteComponent methods in entity class
-		virtual void AddComponent(/*EntityID*/int EntityID)
+		virtual void AddComponent(EntityID EntityID)
 		{
 
 		}
-		virtual void DeleteComponent(/*EntityID*/int EntityID)
+		virtual void DeleteComponent(EntityID EntityID)
 		{
 
 		}
