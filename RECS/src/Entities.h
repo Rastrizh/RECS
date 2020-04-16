@@ -30,5 +30,6 @@ public:
 };
 
 EntityID IEntity::IDCounetr = 0;
+std::set<EntityID> IEntity::freeIDs;
 
 #endif // !ENTITIES_H
