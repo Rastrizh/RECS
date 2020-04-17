@@ -9,14 +9,17 @@ class IEntity
 {
 public:
 	EntityID entityID;
+private:
 	static EntityID IDCounetr;
 private:
 	static std::set<EntityID> freeIDs;
 public:
 	IEntity()
 	{
-		if(freeIDs.empty())
+		if (freeIDs.empty())
+		{
 			entityID = ++IDCounetr;
+		}
 		else
 		{
 			entityID = *freeIDs.begin();
