@@ -5,36 +5,40 @@
 #include <unordered_map>
 
 namespace RECS {
+	template<typename T>
 	class IComponent
 	{
 	private:
-		template<typename ComponentTypeName>
 		class ComponentContainer
 		{
+		private:
+			std::unordered_map<EntityID, IComponent<T>*> container;
 		public:
-			/* TO DO: make mechanism to assotioate newely created component class
-			 * inherited from IComponent with ComponentTypeName and initialize
-			 * container in constructor
-			 */
-			ComponentContainer()
-			{
-				// TO DO: initialize container with ComponentTypeName
-			}
-			std::unordered_map<EntityID, ComponentTypeName> container;
+			void push(EntityID entityID, IComponent<T>* component);
+			void pop(EntityID entityID);
 		};
-		// componentTypeName
-		// TO DO: make mechanism to provide component type name
-		// TO DO: create Entity ID in entity class | checked
-		// TO DO: create AddComponent and DeleteComponent methods in entity class
-		virtual void AddComponent(EntityID EntityID)
+	private:
+		ComponentContainer container;
+	public:
+		virtual void AddComponent(EntityID entityID)
 		{
-
+			container.push(entityID, this);
 		}
-		virtual void DeleteComponent(EntityID EntityID)
+		virtual void DeleteComponent(EntityID entityID)
 		{
-
+			container.pop(entityID);
 		}
 	};
+	template<typename T>
+	inline void IComponent<T>::ComponentContainer::push(EntityID entityID, IComponent<T>* component)
+	{
+		container.emplace(entityID, component);
+	}
+	template<typename T>
+	inline void IComponent<T>::ComponentContainer::pop(EntityID entityID)
+	{
+		container.erase(entityID);
+	}
 }
 
 #endif // !COMPONENTS_H
