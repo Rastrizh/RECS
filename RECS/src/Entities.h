@@ -3,36 +3,55 @@
 
 #include <set>
 
-using EntityID = unsigned short;
+namespace RECS {
+	using EntityID = unsigned short;
 
-class IEntity
-{
-public:
-	EntityID entityID;
-private:
-	static EntityID IDCounetr;
-private:
-	static std::set<EntityID> freeIDs;
-public:
-	IEntity()
+	class IEntity
 	{
-		if (freeIDs.empty())
+	public:
+		EntityID entityID;
+	private:
+		static EntityID IDCounetr;
+	private:
+		static std::set<EntityID> freeIDs;
+	public:
+		IEntity()
 		{
-			entityID = ++IDCounetr;
+			if (freeIDs.empty())
+			{
+				entityID = ++IDCounetr;
+			}
+			else
+			{
+				entityID = *freeIDs.begin();
+				freeIDs.erase(freeIDs.begin());
+			}
 		}
-		else
+		virtual ~IEntity()
 		{
-			entityID = *freeIDs.begin();
-			freeIDs.erase(freeIDs.begin());
+			freeIDs.insert(this->entityID);
 		}
-	}
-	virtual ~IEntity()
-	{
-		freeIDs.insert(this->entityID);
-	}
-};
 
-EntityID IEntity::IDCounetr = 0;
-std::set<EntityID> IEntity::freeIDs;
+		template<class T, class ... P>
+		void AddComponent(P&&... params)
+		{
+			ComponentContainer::template AddComponent<T>(entityID, std::forward<P>(params) ...);
+		}
 
+		template<class T>
+		void DeleteComponent()
+		{
+			ComponentContainer::template DeleteComponent<T>(entityID);
+		}
+
+		template<class T>
+		T* GetComponent()
+		{
+			return ComponentContainer::template GetComponent<T>(entityID);
+		}
+	};
+
+	EntityID IEntity::IDCounetr = 0;
+	std::set<EntityID> IEntity::freeIDs;
+}
 #endif // !ENTITIES_H
