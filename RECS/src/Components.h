@@ -10,7 +10,7 @@ namespace RECS {
 	{
 	public:
 		virtual ~IComponent() = default;
-	};
+	}; // Class IComponent
 
 	template<class T>
 	class Component : public IComponent
@@ -21,7 +21,8 @@ namespace RECS {
 		static const size_t STATIC_COMONENT_TYPE_ID;
 	public:
 		static const size_t GetTypeID() { return STATIC_COMONENT_TYPE_ID; }
-	};
+	}; // Class Component
+
 	template<class T>
 	const size_t Component<T>::STATIC_COMONENT_TYPE_ID = typeid(T).hash_code();
 
@@ -38,7 +39,8 @@ namespace RECS {
 
 		template<class T>
 		static T* GetComponent(EntityID ownerId);
-	};
+	}; // Class ComponentContainer
+
 	std::unordered_map<size_t, std::unordered_map<EntityID, IComponent*>> ComponentContainer::container;
 
 	template<class T, class ...P>
