@@ -2,6 +2,8 @@
 #define ENTITIES_H
 
 #include <set>
+#include <map>
+#include <vector>
 
 namespace RECS {
 	using EntityID = unsigned short;
@@ -53,5 +55,33 @@ namespace RECS {
 
 	EntityID IEntity::IDCounetr = 0;
 	std::set<EntityID> IEntity::freeIDs;
+
+	class EntityContainer
+	{
+	public:
+		static std::map<EntityID, IEntity*> m_entityContainer;
+	public:
+		static IEntity* CreateEntity();
+		static std::vector<IEntity*> GetGroupOfEntities(std::vector<EntityID> targetIDs);
+	};
+
+	std::map<EntityID, IEntity*> EntityContainer::m_entityContainer;
+
+	IEntity* EntityContainer::CreateEntity()
+	{
+		IEntity* entity = new IEntity();
+		m_entityContainer[entity->entityID] = entity;
+		return entity;
+	}
+
+	std::vector<IEntity*> EntityContainer::GetGroupOfEntities(std::vector<EntityID> targetIDs)
+	{
+		std::vector<IEntity*> vec;
+		for (auto &i : targetIDs)
+		{
+			vec.push_back(m_entityContainer[i]);
+		}
+		return vec;
+	}
 }
 #endif // !ENTITIES_H
