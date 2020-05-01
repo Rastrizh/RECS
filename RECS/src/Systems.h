@@ -25,15 +25,15 @@ namespace RECS {
 	protected:
 		std::vector<IEntity*> m_targets;
 	public:
-		static std::vector<EntityID> GetTargetEntityIDs(std::vector<size_t>);
-		//std::vector<IEntity*> GetTargetEntities(std::vector<EntityID>);
-		//void GetTargets(std::initializer_list<EntityID>) { }
+		static auto GetTargetEntityIDs(std::vector<size_t> targetIDs) -> std::vector<EntityID>;
+		virtual void CreatePool() = 0;
+		virtual void Update() = 0;
 	};
 
-	std::vector<EntityID> ISystem::GetTargetEntityIDs(std::vector<size_t> iList)
+	auto ISystem::GetTargetEntityIDs(std::vector<size_t> targetIDs) -> std::vector<EntityID>
 	{
 		std::vector<EntityID> t_iList;
-		for (auto &p : iList)
+		for (auto &p : targetIDs)
 		{
 			for (auto &b : ComponentContainer::instance().container[p])
 				t_iList.push_back(b.first);

@@ -20,7 +20,7 @@ namespace RECS {
 	private:
 		static const size_t STATIC_COMONENT_TYPE_ID;
 	public:
-		static const size_t GetTypeID() { return STATIC_COMONENT_TYPE_ID; }
+		static auto GetTypeID() ->const size_t { return STATIC_COMONENT_TYPE_ID; }
 	}; // Class Component
 
 	template<class T>
@@ -31,13 +31,13 @@ namespace RECS {
 	public:
 		std::unordered_map<size_t, std::unordered_map<RECS::EntityID, IComponent*>> container;
 	public:
-		static ComponentContainer& instance()
+		static auto instance() ->ComponentContainer&
 		{
-			static ComponentContainer* m_instance = new ComponentContainer();
+			static auto m_instance = new ComponentContainer();
 			return *m_instance;
 		}
 	private:
-		ComponentContainer() {}
+		ComponentContainer() = default;
 	public:
 		template<class T, class ... P>
 		void AddComponent(EntityID ownerId, P&&... params)
@@ -53,7 +53,7 @@ namespace RECS {
 		}
 
 		template<class T>
-		T* GetComponent(EntityID ownerId)
+		auto GetComponent(EntityID ownerId) ->T*
 		{
 			return dynamic_cast<T*>(container[T::GetTypeID()][ownerId]);
 		}

@@ -47,7 +47,7 @@ namespace RECS {
 		}
 
 		template<class T>
-		T* GetComponent()
+		auto GetComponent() ->T*
 		{
 			return dynamic_cast<T*>(ComponentContainer::instance().GetComponent<T>(entityID));
 		}
@@ -61,25 +61,25 @@ namespace RECS {
 	public:
 		std::map<EntityID, IEntity*> m_entityContainer;
 	public:
-		static EntityContainer& instance()
+		static auto instance() ->EntityContainer&
 		{
-			static EntityContainer* instance = new EntityContainer();
+			static auto instance = new EntityContainer();
 			return *instance;
 		}
 	private:
-		EntityContainer() {}
+		EntityContainer() = default;
 	public:
-		IEntity* CreateEntity();
-		std::vector<IEntity*> GetGroupOfEntities(std::vector<EntityID> targetIDs);
+		auto CreateEntity() ->IEntity*;
+		auto GetGroupOfEntities(std::vector<EntityID> targetIDs) ->std::vector<IEntity*>;
 	};
 
-	inline IEntity * EntityContainer::CreateEntity()
+	inline auto EntityContainer::CreateEntity() ->IEntity*
 	{
-		IEntity* entity = new IEntity();
+		auto entity = new IEntity();
 		m_entityContainer[entity->entityID] = entity;
 		return entity;
 	}
-	inline std::vector<IEntity*> EntityContainer::GetGroupOfEntities(std::vector<EntityID> targetIDs)
+	inline auto EntityContainer::GetGroupOfEntities(std::vector<EntityID> targetIDs) ->std::vector<IEntity*>
 	{
 		std::vector<IEntity*> vec;
 		for (auto &i : targetIDs)
