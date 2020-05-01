@@ -1,9 +1,9 @@
 #ifndef COMPONENTS_H
 #define COMPONENTS_H
 
-#include "Entities.h"
 #include <unordered_map>
 #include <typeinfo>
+#include "Entities.h"
 
 namespace RECS {
 	class IComponent
@@ -29,35 +29,34 @@ namespace RECS {
 	class ComponentContainer
 	{
 	public:
-		static std::unordered_map<size_t, std::unordered_map<EntityID, IComponent*>> container;
+		std::unordered_map<size_t, std::unordered_map<RECS::EntityID, IComponent*>> container;
+	public:
+		static ComponentContainer& instance()
+		{
+			static ComponentContainer* m_instance = new ComponentContainer();
+			return *m_instance;
+		}
+	private:
+		ComponentContainer() {}
 	public:
 		template<class T, class ... P>
-		static void AddComponent(EntityID ownerId, P&&... params);
+		void AddComponent(EntityID ownerId, P&&... params)
+		{
+			IComponent *component = new T(std::forward<P>(params) ...);
+			container[T::GetTypeID()][ownerId] = component;
+		}
 		
 		template<class T>
-		static void DeleteComponent(EntityID ownerId);
+		void DeleteComponent(EntityID ownerId)
+		{
+			container[T::GetTypeID()].erase(ownerId);
+		}
 
 		template<class T>
-		static T* GetComponent(EntityID ownerId);
+		T* GetComponent(EntityID ownerId)
+		{
+			return dynamic_cast<T*>(container[T::GetTypeID()][ownerId]);
+		}
 	}; // Class ComponentContainer
-
-	std::unordered_map<size_t, std::unordered_map<EntityID, IComponent*>> ComponentContainer::container;
-
-	template<class T, class ...P>
-	inline void ComponentContainer::AddComponent(EntityID ownerId, P && ...params)
-	{
-		IComponent *component = new T(std::forward<P>(params) ...);
-		container[T::GetTypeID()][ownerId] = component;
-	}
-	template<class T>
-	inline void ComponentContainer::DeleteComponent(EntityID ownerId)
-	{
-		container[T::GetTypeID()].erase(ownerId);
-	}
-	template<class T>
-	inline T * ComponentContainer::GetComponent(EntityID ownerId)
-	{
-		return dynamic_cast<T*>(container[T::GetTypeID()][ownerId]);
-	}
 }
 #endif // !COMPONENTS_H
