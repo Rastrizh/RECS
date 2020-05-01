@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include "Components.h"
+#include "Entities.h"
 
 #define EXPAND(...) __VA_ARGS__
 #define FUNC_1(MODIFIER, X) MODIFIER(X)
@@ -34,7 +35,7 @@ namespace RECS {
 		std::vector<EntityID> t_iList;
 		for (auto &p : iList)
 		{
-			for (auto &b : ComponentContainer::container[p])
+			for (auto &b : ComponentContainer::instance().container[p])
 				t_iList.push_back(b.first);
 		}
 
