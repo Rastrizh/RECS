@@ -37,19 +37,19 @@ namespace RECS {
 		template<class T, class ... P>
 		void AddComponent(P&&... params)
 		{
-			ComponentContainer::template AddComponent<T>(entityID, std::forward<P>(params) ...);
+			ComponentContainer::instance().AddComponent<T>(entityID, std::forward<P>(params) ...);
 		}
 
 		template<class T>
 		void DeleteComponent()
 		{
-			ComponentContainer::template DeleteComponent<T>(entityID);
+			ComponentContainer::instance().DeleteComponent<T>(entityID);
 		}
 
 		template<class T>
 		T* GetComponent()
 		{
-			return ComponentContainer::template GetComponent<T>(entityID);
+			return dynamic_cast<T*>(ComponentContainer::instance().GetComponent<T>(entityID));
 		}
 	};
 
@@ -59,22 +59,27 @@ namespace RECS {
 	class EntityContainer
 	{
 	public:
-		static std::map<EntityID, IEntity*> m_entityContainer;
+		std::map<EntityID, IEntity*> m_entityContainer;
 	public:
-		static IEntity* CreateEntity();
-		static std::vector<IEntity*> GetGroupOfEntities(std::vector<EntityID> targetIDs);
+		static EntityContainer& instance()
+		{
+			static EntityContainer* instance = new EntityContainer();
+			return *instance;
+		}
+	private:
+		EntityContainer() {}
+	public:
+		IEntity* CreateEntity();
+		std::vector<IEntity*> GetGroupOfEntities(std::vector<EntityID> targetIDs);
 	};
 
-	std::map<EntityID, IEntity*> EntityContainer::m_entityContainer;
-
-	IEntity* EntityContainer::CreateEntity()
+	inline IEntity * EntityContainer::CreateEntity()
 	{
 		IEntity* entity = new IEntity();
 		m_entityContainer[entity->entityID] = entity;
 		return entity;
 	}
-
-	std::vector<IEntity*> EntityContainer::GetGroupOfEntities(std::vector<EntityID> targetIDs)
+	inline std::vector<IEntity*> EntityContainer::GetGroupOfEntities(std::vector<EntityID> targetIDs)
 	{
 		std::vector<IEntity*> vec;
 		for (auto &i : targetIDs)
