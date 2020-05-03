@@ -36,6 +36,17 @@ namespace RECS {
 			static auto m_instance = new ComponentContainer();
 			return *m_instance;
 		}
+		~ComponentContainer()
+		{
+			for (auto &p : container)
+			{
+				for (auto &c : p.second)
+				{
+					delete c.second;
+					c.second = nullptr;
+				}
+			}
+		}
 	private:
 		ComponentContainer() = default;
 	public:

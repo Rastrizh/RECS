@@ -33,6 +33,10 @@ public:
 class MoveSystem : public ISystem
 {
 public:
+	~MoveSystem()
+	{
+
+	}
 	void CreatePool() final
 	{
 		m_targets = EntityContainer::instance().GetGroupOfEntities(CREATE_TARGET_ENTITY_ID_LIST(Move, Position));
@@ -100,9 +104,11 @@ auto main() -> int
 		std::cout << p.first << ' ' << (dynamic_cast<B*>(p.second))->x << ' ' << (dynamic_cast<B*>(p.second))->y << "\n";
 	}
 
-	/*auto *p = e.GetComponent<A>();
+	auto *p = e.GetComponent<A>();
 	std::cout << p->x << "\n";*/
-	e->~IEntity();
+	entityContainer.~EntityContainer();
+	ComponentContainer::instance().~ComponentContainer();
+	sys.~MoveSystem();
 	_CrtDumpMemoryLeaks();
 	return 0;
 }

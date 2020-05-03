@@ -25,6 +25,9 @@ namespace RECS {
 	protected:
 		std::vector<IEntity*> m_targets;
 	public:
+		virtual ~ISystem()
+		{
+		}
 		static auto GetTargetEntityIDs(std::vector<size_t> targetIDs) -> std::vector<EntityID>;
 		virtual void CreatePool() = 0;
 		virtual void Update() = 0;

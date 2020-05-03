@@ -66,12 +66,22 @@ namespace RECS {
 			static auto instance = new EntityContainer();
 			return *instance;
 		}
+		~EntityContainer();
 	private:
 		EntityContainer() = default;
 	public:
 		auto CreateEntity() ->IEntity*;
 		auto GetGroupOfEntities(std::vector<EntityID> targetIDs) ->std::vector<IEntity*>;
 	};
+
+	inline EntityContainer::~EntityContainer()
+	{
+		for (auto &p : m_entityContainer)
+		{
+			delete p.second;
+			p.second = nullptr;
+		}
+	}
 
 	inline auto EntityContainer::CreateEntity() ->IEntity*
 	{
