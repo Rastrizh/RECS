@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace RECS {
-	using EntityID = unsigned short;
+	using EntityID = unsigned long long;
 
 	class IEntity
 	{
