@@ -28,37 +28,37 @@ namespace RECS {
 		virtual ~ISystem()
 		{
 		}
-		static auto GetTargetEntityIDs(std::vector<size_t> targetIDs) -> std::vector<EntityID>;
+		static auto GetTargetEntityIDs(std::vector<size_t> targetComponentTypeIDs) -> std::vector<EntityID>;
 		virtual void CreatePool() = 0;
 		virtual void Update() = 0;
 	};
 
-	auto ISystem::GetTargetEntityIDs(std::vector<size_t> targetIDs) -> std::vector<EntityID>
+	auto ISystem::GetTargetEntityIDs(std::vector<size_t> targetComponentTypeIDs) -> std::vector<EntityID>
 	{
-		std::vector<EntityID> t_iList;
-		for (auto &p : targetIDs)
+		std::vector<EntityID> targetEntityIDs;
+		for (auto &componentTypeID : targetComponentTypeIDs)
 		{
-			for (auto &b : ComponentContainer::instance().container[p])
-				t_iList.push_back(b.first);
+			for (auto &targets : ComponentContainer::instance().container[componentTypeID])
+				targetEntityIDs.push_back(targets.first);
 		}
 
-		std::sort(t_iList.begin(), t_iList.end());
-		for (auto p = t_iList.begin(); p!=t_iList.end()-1; ++p)
+		std::sort(targetEntityIDs.begin(), targetEntityIDs.end());
+		for (auto it_targetID = targetEntityIDs.begin(); it_targetID!=targetEntityIDs.end()-1; ++it_targetID)
 		{
-			if (*p != *(std::next(p,1))) {
-				if (p == t_iList.begin())
+			if (*it_targetID != *(std::next(it_targetID,1))) {
+				if (it_targetID == targetEntityIDs.begin())
 				{
-					t_iList.erase(t_iList.begin());
-					p = t_iList.begin();
+					targetEntityIDs.erase(targetEntityIDs.begin());
+					it_targetID = targetEntityIDs.begin();
 					continue;
 				}
-				t_iList.erase(std::next(p));
+				targetEntityIDs.erase(std::next(it_targetID));
 			}
 		}
-		auto last = std::unique(t_iList.begin(), t_iList.end());
-		t_iList.erase(last, t_iList.end());
+		auto last = std::unique(targetEntityIDs.begin(), targetEntityIDs.end());
+		targetEntityIDs.erase(last, targetEntityIDs.end());
 
-		return t_iList;
+		return targetEntityIDs;
 	}
 }
 

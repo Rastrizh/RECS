@@ -50,23 +50,34 @@ namespace RECS {
 	private:
 		ComponentContainer() = default;
 	public:
-		template<class T, class ... P>
+		template<typename T, typename ... P>
 		void AddComponent(EntityID ownerId, P&&... params)
 		{
 			IComponent *component = new T(std::forward<P>(params) ...);
 			container[T::GetTypeID()][ownerId] = component;
 		}
 		
-		template<class T>
+		template<typename T>
 		void DeleteComponent(EntityID ownerId)
 		{
 			container[T::GetTypeID()].erase(ownerId);
 		}
 
-		template<class T>
+		template<typename T>
 		auto GetComponent(EntityID ownerId) ->T*
 		{
 			return dynamic_cast<T*>(container[T::GetTypeID()][ownerId]);
+		}
+
+		template<typename T>
+		auto HasComponent(EntityID id) ->bool
+		{
+			for (const auto& e : container[T::GetTypeID()])
+			{
+				if (e.first == id)
+					return true;
+			}
+			return false;
 		}
 	}; // Class ComponentContainer
 }

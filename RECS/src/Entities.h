@@ -34,22 +34,28 @@ namespace RECS {
 			freeIDs.insert(this->entityID);
 		}
 
-		template<class T, class ... P>
+		template<typename T, class ... P>
 		void AddComponent(P&&... params)
 		{
 			ComponentContainer::instance().AddComponent<T>(entityID, std::forward<P>(params) ...);
 		}
 
-		template<class T>
+		template<typename T>
 		void DeleteComponent()
 		{
 			ComponentContainer::instance().DeleteComponent<T>(entityID);
 		}
 
-		template<class T>
+		template<typename T>
 		auto GetComponent() ->T*
 		{
 			return dynamic_cast<T*>(ComponentContainer::instance().GetComponent<T>(entityID));
+		}
+
+		template<typename T>
+		auto HasComponent() ->bool
+		{
+			return ComponentContainer::instance().HasComponent<T>(entityID);
 		}
 	};
 
