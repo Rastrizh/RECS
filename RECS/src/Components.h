@@ -33,8 +33,8 @@ namespace RECS {
 	public:
 		static auto instance() ->ComponentContainer&
 		{
-			static auto m_instance = new ComponentContainer();
-			return *m_instance;
+			static ComponentContainer m_instance;
+			return m_instance;
 		}
 		~ComponentContainer()
 		{

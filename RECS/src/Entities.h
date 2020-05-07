@@ -3,6 +3,7 @@
 
 #include <set>
 #include <map>
+#include <unordered_map>
 #include <vector>
 
 namespace RECS {
@@ -14,7 +15,6 @@ namespace RECS {
 		EntityID entityID;
 	private:
 		static EntityID IDCounetr;
-	private:
 		static std::set<EntityID> freeIDs;
 	public:
 		IEntity()
@@ -38,6 +38,7 @@ namespace RECS {
 		void AddComponent(P&&... params)
 		{
 			ComponentContainer::instance().AddComponent<T>(entityID, std::forward<P>(params) ...);
+			EntityContainer::instance().m_ComponentLists[this].push_back(T::GetTypeID());
 		}
 
 		template<typename T>
@@ -65,19 +66,21 @@ namespace RECS {
 	class EntityContainer
 	{
 	public:
-		std::map<EntityID, IEntity*> m_entityContainer;
+		std::unordered_map<EntityID, IEntity*> m_entityContainer;
+
+		std::map<IEntity*, std::list<size_t>> m_ComponentLists;
 	public:
 		static auto instance() ->EntityContainer&
 		{
-			static auto instance = new EntityContainer();
-			return *instance;
+			static EntityContainer instance;
+			return instance;
 		}
 		~EntityContainer();
 	private:
 		EntityContainer() = default;
 	public:
 		auto CreateEntity() ->IEntity*;
-		auto GetGroupOfEntities(std::vector<EntityID> targetIDs) ->std::vector<IEntity*>;
+		auto GetGroupOfEntities(std::list<size_t> componentTypeIDs) ->std::vector<IEntity*>;
 	};
 
 	inline EntityContainer::~EntityContainer()
@@ -95,14 +98,15 @@ namespace RECS {
 		m_entityContainer[entity->entityID] = entity;
 		return entity;
 	}
-	inline auto EntityContainer::GetGroupOfEntities(std::vector<EntityID> targetIDs) ->std::vector<IEntity*>
+	inline auto EntityContainer::GetGroupOfEntities(std::list<size_t> componentTypeIDs) ->std::vector<IEntity*>
 	{
-		std::vector<IEntity*> vec;
-		for (auto &i : targetIDs)
+		std::vector<IEntity*> targets;
+		for (auto &e : m_ComponentLists)
 		{
-			vec.push_back(m_entityContainer[i]);
+			if(e.second == componentTypeIDs)
+				targets.push_back(e.first);
 		}
-		return vec;
+		return targets;
 	}
 }
 #endif // !ENTITIES_H
