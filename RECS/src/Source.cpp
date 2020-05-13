@@ -66,7 +66,7 @@ auto main() -> int
 
 	EntityContainer& entityContainer = EntityContainer::instance();
 
-	/*std::vector<IEntity*> ve;
+	std::vector<IEntity*> ve;
 	auto begin = std::chrono::steady_clock::now();
 	for (size_t i = 0; i < 150000; i++)
 		ve.push_back(entityContainer.CreateEntity());
@@ -83,14 +83,14 @@ auto main() -> int
 	auto end2 = std::chrono::steady_clock::now();
 	auto elapsed_ms2 = std::chrono::duration_cast<std::chrono::milliseconds>(end2 - begin2);
 	std::cout << "The time: " << elapsed_ms2.count() << " ms\n";
-	*/
+	
 
 	/*IEntity* e = entityContainer.CreateEntity();
 	IEntity* e2 = entityContainer.CreateEntity();
-	IEntity* e3 = entityContainer.CreateEntity();*/
+	IEntity* e3 = entityContainer.CreateEntity();
 
 	//e->AddComponent<Move>(0.001F, 0.001F);
-	/*e->AddComponent<Position>(0.001F, 0.001F);
+	e->AddComponent<Position>(0.001F, 0.001F);
 
 	e2->AddComponent<Move>(0.002F, 0.002F);
 	e2->AddComponent<Position>(0.002F, 0.002F);
@@ -99,23 +99,23 @@ auto main() -> int
 	e3->AddComponent<Position>(0.003F, 0.003F);
 	*/
 	
-	/*MoveSystem sys;
+	MoveSystem sys;
 	auto begin3 = std::chrono::steady_clock::now();
 	sys.CreatePool();
 	auto end3 = std::chrono::steady_clock::now();
 	auto elapsed_ms3 = std::chrono::duration_cast<std::chrono::milliseconds>(end3 - begin3);
 	std::cout << "The time: " << elapsed_ms3.count() << " ms\n";
-	*/
+	
 
-	/*while (true)
+	while (true)
 	{
 		auto begin4 = std::chrono::steady_clock::now();
 		sys.Update();
 		auto end4 = std::chrono::steady_clock::now();
 		auto elapsed_ms4 = std::chrono::duration_cast<std::chrono::milliseconds>(end4 - begin4);
 		std::cout << "The time: " << elapsed_ms4.count() << " ms\n" << std::flush;
-		system("CLS");
-	}*/
+		//system("CLS");
+	}
 	
 	/*while (true)
 	{
@@ -145,8 +145,8 @@ auto main() -> int
 
 	auto *p = e.GetComponent<A>();
 	std::cout << p->x << "\n";*/
-	//entityContainer.~EntityContainer();
-	//ComponentContainer::instance().~ComponentContainer();
+	entityContainer.~EntityContainer();
+	ComponentContainer::instance().~ComponentContainer();
 	//sys.~MoveSystem();
 	_CrtDumpMemoryLeaks();
 	std::cin.get();

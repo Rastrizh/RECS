@@ -50,7 +50,7 @@ namespace RECS {
 		template<typename T>
 		auto GetComponent() ->T*
 		{
-			return dynamic_cast<T*>(ComponentContainer::instance().GetComponent<T>(entityID));
+			return ComponentContainer::instance().GetComponent<T>(entityID);
 		}
 
 		template<typename T>

@@ -66,7 +66,7 @@ namespace RECS {
 		template<typename T>
 		auto GetComponent(EntityID ownerId) ->T*
 		{
-			return dynamic_cast<T*>(container[T::GetTypeID()][ownerId]);
+			return (T*)(container[T::GetTypeID()][ownerId]);
 		}
 
 		template<typename T>
