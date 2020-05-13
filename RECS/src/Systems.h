@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <algorithm>
-#include "Components.h"
 #include "Entities.h"
 
 #define EXPAND(...) __VA_ARGS__

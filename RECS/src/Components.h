@@ -6,6 +6,7 @@
 #include "Entities.h"
 
 namespace RECS {
+
 	class IComponent
 	{
 	public:
@@ -29,56 +30,30 @@ namespace RECS {
 	class ComponentContainer
 	{
 	public:
-		std::unordered_map<size_t, std::unordered_map<RECS::EntityID, IComponent*>> container;
+		std::unordered_map<EntityID, IComponent*> container;
+
 	public:
-		static auto instance() ->ComponentContainer&
-		{
-			static ComponentContainer m_instance;
-			return m_instance;
-		}
-		~ComponentContainer()
-		{
-			for (auto &p : container)
-			{
-				for (auto &c : p.second)
-				{
-					delete c.second;
-					c.second = nullptr;
-				}
-			}
-		}
+		static auto instance()->ComponentContainer&;
+		~ComponentContainer();
+		void DeleteComponent(EntityID ownerId);
+
 	private:
 		ComponentContainer() = default;
+
 	public:
 		template<typename T, typename ... P>
 		void AddComponent(EntityID ownerId, P&&... params)
 		{
 			IComponent *component = new T(std::forward<P>(params) ...);
-			container[T::GetTypeID()][ownerId] = component;
-		}
-		
-		template<typename T>
-		void DeleteComponent(EntityID ownerId)
-		{
-			container[T::GetTypeID()].erase(ownerId);
+			container[ownerId] = component;
 		}
 
 		template<typename T>
 		auto GetComponent(EntityID ownerId) ->T*
 		{
-			return (T*)(container[T::GetTypeID()][ownerId]);
+			return (T*)(container[ownerId]);
 		}
 
-		template<typename T>
-		auto HasComponent(EntityID id) ->bool
-		{
-			for (const auto& e : container[T::GetTypeID()])
-			{
-				if (e.first == id)
-					return true;
-			}
-			return false;
-		}
 	}; // Class ComponentContainer
 }
 #endif // !COMPONENTS_H

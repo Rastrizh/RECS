@@ -3,6 +3,7 @@
 #include <crtdbg.h>
 #include <iostream>
 #include <chrono>
+#include "Components.h"
 #include "Systems.h"
 
 using namespace RECS;
@@ -113,7 +114,8 @@ auto main() -> int
 		sys.Update();
 		auto end4 = std::chrono::steady_clock::now();
 		auto elapsed_ms4 = std::chrono::duration_cast<std::chrono::milliseconds>(end4 - begin4);
-		std::cout << "The time: " << elapsed_ms4.count() << " ms\n" << std::flush;
+		std::cout << "The time: " << elapsed_ms4.count() << " ms\n";
+
 		//system("CLS");
 	}
 	
