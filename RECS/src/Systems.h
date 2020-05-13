@@ -24,9 +24,7 @@ namespace RECS {
 	protected:
 		std::vector<IEntity*> m_targets;
 	public:
-		virtual ~ISystem()
-		{
-		}
+		virtual ~ISystem() = default;
 		virtual void CreatePool() = 0;
 		virtual void Update() = 0;
 	};

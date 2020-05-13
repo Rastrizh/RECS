@@ -21,7 +21,7 @@ namespace RECS {
 	private:
 		static const size_t STATIC_COMONENT_TYPE_ID;
 	public:
-		static auto GetTypeID() ->const size_t { return STATIC_COMONENT_TYPE_ID; }
+		static auto GetTypeID() -> size_t { return STATIC_COMONENT_TYPE_ID; }
 	}; // Class Component
 
 	template<class T>

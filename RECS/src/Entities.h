@@ -63,7 +63,7 @@ namespace RECS {
 		EntityContainer() = default;
 	public:
 		auto CreateEntity() ->IEntity*;
-		auto GetGroupOfEntities(std::list<size_t> componentTypeIDs) ->std::vector<IEntity*>;
+		auto GetGroupOfEntities(const std::list<size_t>& componentTypeIDs) ->std::vector<IEntity*>;
 	};
 
 	inline EntityContainer::~EntityContainer()
@@ -82,13 +82,15 @@ namespace RECS {
 		return entity;
 	}
 
-	inline auto EntityContainer::GetGroupOfEntities(std::list<size_t> componentTypeIDs) ->std::vector<IEntity*>
+	inline auto EntityContainer::GetGroupOfEntities(const std::list<size_t>& componentTypeIDs) ->std::vector<IEntity*>
 	{
 		std::vector<IEntity*> targets;
 		for (auto &e : m_ComponentLists)
 		{
 			if (e.second == componentTypeIDs)
+			{
 				targets.push_back(e.first);
+			}
 		}
 		return targets;
 	}

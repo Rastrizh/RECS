@@ -35,10 +35,7 @@ public:
 class MoveSystem : public ISystem
 {
 public:
-	~MoveSystem()
-	{
-
-	}
+	~MoveSystem() final = default;
 	void CreatePool() final
 	{
 		m_targets = EntityContainer::instance().GetGroupOfEntities(CREATE_TARGET_ENTITY_ID_LIST(Move, Position));
@@ -70,7 +67,9 @@ auto main() -> int
 	std::vector<IEntity*> ve;
 	auto begin = std::chrono::steady_clock::now();
 	for (size_t i = 0; i < 150000; i++)
+	{
 		ve.push_back(entityContainer.CreateEntity());
+	}
 	auto end = std::chrono::steady_clock::now();
 	auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
 	std::cout << "The time: " << elapsed_ms.count() << " ms\n";
