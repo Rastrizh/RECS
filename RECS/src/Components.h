@@ -3,9 +3,9 @@
 
 #include <unordered_map>
 #include <typeinfo>
-#include "Entities.h"
 
 namespace RECS {
+	using ComponentType = size_t;
 
 	class IComponent
 	{
@@ -27,33 +27,5 @@ namespace RECS {
 	template<class T>
 	const size_t Component<T>::STATIC_COMONENT_TYPE_ID = typeid(T).hash_code();
 
-	class ComponentContainer
-	{
-	public:
-		std::unordered_map<EntityID, IComponent*> container;
-
-	public:
-		static auto instance()->ComponentContainer&;
-		~ComponentContainer();
-		void DeleteComponent(EntityID ownerId);
-
-	private:
-		ComponentContainer() = default;
-
-	public:
-		template<typename T, typename ... P>
-		void AddComponent(EntityID ownerId, P&&... params)
-		{
-			IComponent *component = new T(std::forward<P>(params) ...);
-			container[ownerId] = component;
-		}
-
-		template<typename T>
-		auto GetComponent(EntityID ownerId) ->T*
-		{
-			return (T*)(container[ownerId]);
-		}
-
-	}; // Class ComponentContainer
 }
 #endif // !COMPONENTS_H

@@ -146,14 +146,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Components.cpp" />
+    <ClCompile Include="src\ComponentContainer.cpp" />
+    <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\Entities.cpp" />
+    <ClCompile Include="src\EntityContainer.cpp" />
     <ClCompile Include="src\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ComponentContainer.h" />
     <ClInclude Include="src\Components.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entities.h" />
+    <ClInclude Include="src\EntityContainer.h" />
+    <ClInclude Include="src\Events\Delegate.h" />
+    <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\Systems.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -22,7 +22,7 @@ namespace RECS {
 	class ISystem
 	{
 	protected:
-		std::vector<IEntity*> m_targets;
+		std::vector<Entity*> m_targets;
 	public:
 		virtual ~ISystem() = default;
 		virtual void CreatePool() = 0;

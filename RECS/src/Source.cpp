@@ -5,6 +5,8 @@
 #include <chrono>
 #include "Components.h"
 #include "Systems.h"
+#include "EntityContainer.h"
+#include "ComponentContainer.h"
 
 using namespace RECS;
 
@@ -64,7 +66,7 @@ auto main() -> int
 
 	EntityContainer& entityContainer = EntityContainer::instance();
 
-	std::vector<IEntity*> ve;
+	std::vector<Entity*> ve;
 	auto begin = std::chrono::steady_clock::now();
 	for (size_t i = 0; i < 150000; i++)
 	{
@@ -85,9 +87,9 @@ auto main() -> int
 	std::cout << "The time: " << elapsed_ms2.count() << " ms\n";
 	
 
-	/*IEntity* e = entityContainer.CreateEntity();
-	IEntity* e2 = entityContainer.CreateEntity();
-	IEntity* e3 = entityContainer.CreateEntity();
+	/*Entity* e = entityContainer.CreateEntity();
+	Entity* e2 = entityContainer.CreateEntity();
+	Entity* e3 = entityContainer.CreateEntity();
 
 	//e->AddComponent<Move>(0.001F, 0.001F);
 	e->AddComponent<Position>(0.001F, 0.001F);

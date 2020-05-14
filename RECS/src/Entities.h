@@ -2,33 +2,43 @@
 #define ENTITIES_H
 
 #include <set>
-#include <map>
-#include <unordered_map>
-#include <vector>
+#include "Events/Event.h"
 
 namespace RECS {
 	class EntityContainer;
 
 	using EntityID = unsigned long long;
 
-	class IEntity
+	class Entity
 	{
 	public:
 		EntityID entityID;
+
 	private:
 		static EntityID IDCounetr;
 		static std::set<EntityID> freeIDs;
-	public:
-		IEntity();
-		~IEntity();
 
-		void DeleteComponent();
+	public:
+		//static event<ComponentType> OnComponentAdded;
+		//static event<ComponentType> OnComponentRemoved;
+
+	public:
+		Entity();
+		~Entity();
+
+		template<typename T>
+		void DeleteComponent()
+		{
+			ComponentContainer::instance().DeleteComponent<T>(entityID);
+			//OnComponentRemoved(T::GetTypeID());
+		}
 
 		template<typename T, class ... P>
 		void AddComponent(P&&... params)
 		{
 			ComponentContainer::instance().AddComponent<T>(entityID, std::forward<P>(params) ...);
 			EntityContainer::instance().m_ComponentLists[this].push_back(T::GetTypeID());
+			//OnComponentAdded(T::GetTypeID());
 		}
 
 		template<typename T>
@@ -49,50 +59,5 @@ namespace RECS {
 			return false;
 		}
 	};
-
-	class EntityContainer
-	{
-	public:
-		std::unordered_map<EntityID, IEntity*> m_entityContainer;
-
-		std::map<IEntity*, std::list<size_t>> m_ComponentLists;
-	public:
-		static auto instance()->EntityContainer&;
-		~EntityContainer();
-	private:
-		EntityContainer() = default;
-	public:
-		auto CreateEntity() ->IEntity*;
-		auto GetGroupOfEntities(const std::list<size_t>& componentTypeIDs) ->std::vector<IEntity*>;
-	};
-
-	inline EntityContainer::~EntityContainer()
-	{
-		for (auto &p : m_entityContainer)
-		{
-			delete p.second;
-			p.second = nullptr;
-		}
-	}
-
-	inline auto EntityContainer::CreateEntity() ->IEntity*
-	{
-		auto entity = new IEntity();
-		m_entityContainer[entity->entityID] = entity;
-		return entity;
-	}
-
-	inline auto EntityContainer::GetGroupOfEntities(const std::list<size_t>& componentTypeIDs) ->std::vector<IEntity*>
-	{
-		std::vector<IEntity*> targets;
-		for (auto &e : m_ComponentLists)
-		{
-			if (e.second == componentTypeIDs)
-			{
-				targets.push_back(e.first);
-			}
-		}
-		return targets;
-	}
 }
 #endif // !ENTITIES_H
