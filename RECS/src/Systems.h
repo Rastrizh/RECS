@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include "Entities.h"
+#include "Components.h"
 
 #define EXPAND(...) __VA_ARGS__
 #define FUNC_1(MODIFIER, X) MODIFIER(X)
@@ -16,7 +17,7 @@
 #define FOR_EACH(MODIFIER, ...) EXPAND(GET_MACRO(__VA_ARGS__, FUNC_6, FUNC_5, FUNC_4, FUNC_3, FUNC_2, FUNC_1)(MODIFIER, __VA_ARGS__))
 
 #define COMPONENT_GET_TYPE_ID(COMPONENT_CLASS) COMPONENT_CLASS::GetTypeID()
-#define CREATE_TARGET_ENTITY_ID_LIST(...) (std::list<size_t>({ FOR_EACH(COMPONENT_GET_TYPE_ID, __VA_ARGS__) }))
+#define CREATE_TARGET_ENTITY_ID_LIST(...) (std::list<RECS::ComponentType>({ FOR_EACH(COMPONENT_GET_TYPE_ID, __VA_ARGS__) }))
 
 namespace RECS {
 	class ISystem
