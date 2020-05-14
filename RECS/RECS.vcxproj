@@ -152,6 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Components.h" />
+    <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entities.h" />
     <ClInclude Include="src\Systems.h" />
   </ItemGroup>
