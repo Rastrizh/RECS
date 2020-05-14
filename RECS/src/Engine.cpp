@@ -5,6 +5,11 @@
 #include "Engine.h"
 
 namespace RECS {
+auto Engine::instance() -> Engine &
+{
+	static Engine instance;
+	return instance;
+}
 
 auto Engine::CreateEntity() -> Entity *
 {

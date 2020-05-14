@@ -4,8 +4,11 @@
 namespace RECS {
 	class Engine
 	{
-	public:
+	private:
 		Engine() = default;
+
+	public:
+		static auto instance()->Engine&;
 		~Engine() = default;
 
 		auto CreateEntity()->Entity*;
