@@ -1,5 +1,4 @@
 #include "Components.h"
-//#include "EntityContainer.h"
 #include "Entities.h"
 #include "Events/Event.h"
 #include "Engine.h"
@@ -13,10 +12,9 @@ auto Engine::instance() -> Engine &
 
 auto Engine::CreateEntity() -> Entity *
 {
-	/*auto e = EntityContainer::instance().CreateEntity();
+	auto e = m_pEntityContainerInstance->CreateEntity();
 	OnEntityCreated(e);
-	return e;*/
-	return nullptr;
+	return e;
 }
 void Engine::KillEntity()
 {

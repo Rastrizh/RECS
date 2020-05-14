@@ -1,9 +1,13 @@
 #ifndef ENGINE_H
 #define ENGINE_H
+#include "EntityContainer.h"
 
 namespace RECS {
 	class Engine
 	{
+	private:
+		EntityContainer *m_pEntityContainerInstance;
+
 	private:
 		Engine() = default;
 
