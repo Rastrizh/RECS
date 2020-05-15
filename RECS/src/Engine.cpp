@@ -34,13 +34,19 @@ void Engine::KillEntity()
 void Engine::KillAllEntities()
 {
 }
+auto Engine::GetGroup(const std::list<ComponentType>& componentTypeIDs) -> std::vector<Entity *>
+{
+	return m_pEntityContainer->GetGroupOfEntities(componentTypeIDs);
+}
 void Engine::ComponentAdded(Entity * e, ComponentType componentType)
 {
 	m_pEntityContainer->m_ComponentLists[e].push_back(componentType);
+	OnEntityChanged(e);
 }
 
 void Engine::ComponentRemoved(Entity * e, ComponentType componentType)
 {
 	m_pEntityContainer->m_ComponentLists[e].remove(componentType);
+	OnEntityChanged(e);
 }
 }
