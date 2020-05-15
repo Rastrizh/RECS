@@ -1,6 +1,7 @@
 #include "Components.h"
 #include "ComponentContainer.h"
 #include "EntityContainer.h"
+#include "Engine.h"
 #include "Entities.h"
 
 namespace RECS {

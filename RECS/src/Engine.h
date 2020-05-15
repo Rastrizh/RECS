@@ -6,7 +6,7 @@ namespace RECS {
 	class Engine
 	{
 	private:
-		EntityContainer *m_pEntityContainerInstance;
+		EntityContainer *m_pEntityContainer;
 
 	private:
 		Engine() = default;
@@ -18,10 +18,13 @@ namespace RECS {
 		auto CreateEntity()->Entity*;
 		void KillEntity();
 		void KillAllEntities();
-
+		
 		event<Entity*> OnEntityCreated;
 		event<Entity*> OnEntityDestroyed;
 		event<Entity*> OnEntityChanged;
+
+		void ComponentAdded(Entity* e, ComponentType componentType);
+		void ComponentRemoved(Entity* e, ComponentType componentType);
 	};
 }
 
