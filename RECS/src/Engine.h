@@ -9,7 +9,7 @@ namespace RECS {
 		EntityContainer *m_pEntityContainer;
 
 	private:
-		Engine() = default;
+		Engine();
 
 	public:
 		static auto instance()->Engine&;
@@ -18,7 +18,7 @@ namespace RECS {
 		auto CreateEntity()->Entity*;
 		void KillEntity();
 		void KillAllEntities();
-		auto GetGroup(const std::list<ComponentType>& componentTypeIDs)->std::vector<Entity*>;
+		auto GetGroup(std::list<ComponentType>&& componentTypeIDs)->std::vector<Entity*>;
 		
 		event<Entity*> OnEntityCreated;
 		event<Entity*> OnEntityDestroyed;

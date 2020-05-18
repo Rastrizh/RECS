@@ -41,7 +41,7 @@ public:
 	~MoveSystem() final = default;
 	void CreatePool() final
 	{
-		m_targets = Engine::instance().GetGroup(CREATE_TARGET_ENTITY_ID_LIST(Move, Position));
+		m_targets = Engine::instance().GetGroup(std::move(CREATE_TARGET_ENTITY_ID_LIST(Move, Position)));
 	}
 
 	void Update() final
@@ -65,13 +65,13 @@ auto main() -> int
 	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
 	_CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
 
-	//EntityContainer& entityContainer = EntityContainer::instance();
+	Engine &engine = Engine::instance();
 
-	/*std::vector<Entity*> ve;
+	std::vector<Entity*> ve;
 	auto begin = std::chrono::steady_clock::now();
 	for (size_t i = 0; i < 150000; i++)
 	{
-		ve.push_back(entityContainer.CreateEntity());
+		ve.push_back(engine.CreateEntity());
 	}
 	auto end = std::chrono::steady_clock::now();
 	auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
@@ -86,11 +86,11 @@ auto main() -> int
 	auto end2 = std::chrono::steady_clock::now();
 	auto elapsed_ms2 = std::chrono::duration_cast<std::chrono::milliseconds>(end2 - begin2);
 	std::cout << "The time: " << elapsed_ms2.count() << " ms\n";
-	*/
+	
 
-	/*Entity* e = entityContainer.CreateEntity();
-	Entity* e2 = entityContainer.CreateEntity();
-	Entity* e3 = entityContainer.CreateEntity();
+	/*Entity* e = engine.CreateEntity();
+	Entity* e2 = engine.CreateEntity();
+	Entity* e3 = engine.CreateEntity();
 
 	//e->AddComponent<Move>(0.001F, 0.001F);
 	e->AddComponent<Position>(0.001F, 0.001F);
@@ -102,7 +102,7 @@ auto main() -> int
 	e3->AddComponent<Position>(0.003F, 0.003F);
 	*/
 	
-	/*MoveSystem sys;
+	MoveSystem sys;
 	auto begin3 = std::chrono::steady_clock::now();
 	sys.CreatePool();
 	auto end3 = std::chrono::steady_clock::now();

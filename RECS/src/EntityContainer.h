@@ -19,7 +19,7 @@ namespace RECS {
 
 	public:
 		auto CreateEntity()->Entity*;
-		auto GetGroupOfEntities(const std::list<ComponentType>& componentTypeIDs)->std::vector<Entity*>;
+		auto GetGroupOfEntities(std::list<ComponentType>&& componentTypeIDs)->std::vector<Entity*>;
 	};
 }
 
