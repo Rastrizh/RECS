@@ -12,12 +12,11 @@ auto Engine::instance() -> Engine &
 
 Engine::Engine()
 {
-	m_pEntityContainer = new EntityContainer();
 }
 
 auto Engine::CreateEntity() -> Entity *
 {
-	auto e = m_pEntityContainer->CreateEntity();
+	auto e = EntityContainer::instance().CreateEntity();
 	
 	e->OnComponentAdded += [this](Entity* e, ComponentType componentType)
 	{
@@ -41,17 +40,17 @@ void Engine::KillAllEntities()
 }
 auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> std::vector<Entity *>
 {
-	return m_pEntityContainer->GetGroupOfEntities(std::move(componentTypeIDs));
+	return EntityContainer::instance().GetGroupOfEntities(std::move(componentTypeIDs));
 }
 void Engine::ComponentAdded(Entity * e, ComponentType componentType)
 {
-	m_pEntityContainer->m_ComponentLists[e].push_back(componentType);
+	EntityContainer::instance().m_ComponentLists[e].push_back(componentType);
 	OnEntityChanged(e);
 }
 
 void Engine::ComponentRemoved(Entity * e, ComponentType componentType)
 {
-	m_pEntityContainer->m_ComponentLists[e].remove(componentType);
+	EntityContainer::instance().m_ComponentLists[e].remove(componentType);
 	OnEntityChanged(e);
 }
 }

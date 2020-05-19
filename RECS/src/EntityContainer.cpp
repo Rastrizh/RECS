@@ -37,7 +37,4 @@ auto EntityContainer::GetGroupOfEntities(std::list<ComponentType>&& componentTyp
 	}
 	return targets;
 }
-
-EntityID Entity::IDCounetr = 0;
-std::set<EntityID> Entity::freeIDs;
 }

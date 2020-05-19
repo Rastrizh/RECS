@@ -6,9 +6,6 @@ namespace RECS {
 	class Engine
 	{
 	private:
-		EntityContainer *m_pEntityContainer;
-
-	private:
 		Engine();
 
 	public:

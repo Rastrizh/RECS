@@ -15,6 +15,13 @@ namespace RECS {
 		std::map<Entity*, std::list<ComponentType>> m_ComponentLists;
 	public:
 		~EntityContainer();
+		static EntityContainer& instance() 
+		{
+			static EntityContainer m_instance;
+			return m_instance;
+		}
+
+	private:
 		EntityContainer() = default;
 
 	public:
