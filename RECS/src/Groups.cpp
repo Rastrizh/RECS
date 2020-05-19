@@ -1,8 +1,8 @@
 #include "Components.h"
 #include "Entities.h"
 #include "Events/Event.h"
-#include "Engine.h"
 #include "Groups.h"
+#include "Engine.h"
 
 RECS::Group::~Group()
 {

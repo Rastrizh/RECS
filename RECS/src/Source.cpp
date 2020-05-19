@@ -64,7 +64,7 @@ auto main() -> int
 	_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR);
 	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
 	_CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
-
+	
 	Engine &engine = Engine::instance();
 
 	std::vector<Entity*> ve;
@@ -80,13 +80,14 @@ auto main() -> int
 	auto begin2 = std::chrono::steady_clock::now();
 	for (auto &e : ve)
 	{
-		e->AddComponent<Move>(0.002F, 0.002F);
+		e->AddComponent<Move>(0.02F, 0.02F);
 		e->AddComponent<Position>(0.002F, 0.002F);
 	}
 	auto end2 = std::chrono::steady_clock::now();
 	auto elapsed_ms2 = std::chrono::duration_cast<std::chrono::milliseconds>(end2 - begin2);
 	std::cout << "The time: " << elapsed_ms2.count() << " ms\n";
 	
+	ve[1]->DeleteComponent<Move>();
 
 	/*Entity* e = engine.CreateEntity();
 	Entity* e2 = engine.CreateEntity();

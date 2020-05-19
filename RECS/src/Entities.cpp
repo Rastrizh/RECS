@@ -23,5 +23,6 @@ Entity::~Entity()
 {
 	freeIDs.insert(this->entityID);
 }
-
+EntityID Entity::IDCounetr = 0;
+std::set<EntityID> Entity::freeIDs;
 }

@@ -1,7 +1,6 @@
 #include "Components.h"
 #include "Entities.h"
 #include "Events/Event.h"
-#include "Groups.h"
 #include "Engine.h"
 
 namespace RECS {
