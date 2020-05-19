@@ -10,10 +10,5 @@ namespace RECS {
 
 	ComponentContainer::~ComponentContainer()
 	{
-		for (auto &p : container)
-		{
-			delete p.second;
-			p.second = nullptr;
-		}
 	}
 }
