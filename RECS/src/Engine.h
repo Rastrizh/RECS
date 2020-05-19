@@ -6,6 +6,8 @@ namespace RECS {
 	class Engine
 	{
 	private:
+		std::map<std::list<ComponentType>, Group*> m_groups;
+	private:
 		Engine();
 
 	public:
@@ -15,7 +17,7 @@ namespace RECS {
 		auto CreateEntity()->Entity*;
 		void KillEntity();
 		void KillAllEntities();
-		auto GetGroup(std::list<ComponentType>&& componentTypeIDs)->std::vector<Entity*>;
+		auto GetGroup(std::list<ComponentType>&& componentTypeIDs)->Group*;
 		
 		event<Entity*> OnEntityCreated;
 		event<Entity*> OnEntityDestroyed;

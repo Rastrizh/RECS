@@ -41,12 +41,12 @@ public:
 	~MoveSystem() final = default;
 	void CreatePool() final
 	{
-		m_targets = Engine::instance().GetGroup(std::move(CREATE_TARGET_ENTITY_ID_LIST(Move, Position)));
+		m_targetGroup = Engine::instance().GetGroup(std::move(CREATE_TARGET_ENTITY_ID_LIST(Move, Position)));
 	}
 
 	void Update() final
 	{
-		for (auto e : m_targets)
+		for (auto e : m_targetGroup->GetEntities())
 		{
 			auto move = e->GetComponent<Move>();
 			auto pos = e->GetComponent<Position>();

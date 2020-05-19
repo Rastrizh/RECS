@@ -1,6 +1,7 @@
 #include "Components.h"
 #include "Entities.h"
 #include "Events/Event.h"
+#include "Groups.h"
 #include "Engine.h"
 
 namespace RECS {
@@ -38,9 +39,15 @@ void Engine::KillEntity()
 void Engine::KillAllEntities()
 {
 }
-auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> std::vector<Entity *>
+auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> Group*
 {
-	return EntityContainer::instance().GetGroupOfEntities(std::move(componentTypeIDs));
+	if (m_groups[componentTypeIDs] == nullptr)
+	{
+		Group* group = new Group(std::move(componentTypeIDs));
+		m_groups[componentTypeIDs] = group;
+		return group;
+	}
+	return m_groups[componentTypeIDs];
 }
 void Engine::ComponentAdded(Entity * e, ComponentType componentType)
 {
