@@ -19,6 +19,23 @@ void RECS::Group::RemoveEntity(Entity*)
 
 }
 
+void RECS::Group::AddOrRemoveChangedEntity(Entity *e)
+{
+	for (auto & c : m_groupSignature)
+	{
+		if (e->HasComponent(c))
+		{
+			continue;
+		}
+		else
+		{
+			RemoveEntity(e);
+			return;
+		}
+	}
+	AddEntity(e);
+}
+
 auto RECS::Group::GetEntities() ->std::vector<Entity*>&
 {
 	return m_entities;

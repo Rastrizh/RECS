@@ -12,8 +12,11 @@ namespace RECS {
 		Group(std::list<ComponentType>&& groupSignature);
 		~Group();
 
+		event<Entity*> OnEntityChanged;
+
 		void AddEntity(Entity*);
 		void RemoveEntity(Entity*);
+		void AddOrRemoveChangedEntity(Entity*);
 		auto GetEntities()->std::vector<Entity*>&;
 
 	};

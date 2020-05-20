@@ -46,8 +46,7 @@ namespace RECS {
 			return ComponentContainer::instance().GetComponent<T>(entityID);
 		}
 
-		template<typename T>
-		auto HasComponent() ->bool
+		auto HasComponent(ComponentType) ->bool
 		{
 			/*auto comp = Engine::instance().m_pEntityContainerInstance->m_ComponentLists.find(this);
 			auto it = std::find(comp->second.begin(), comp->second.end(), T::GetTypeID());
