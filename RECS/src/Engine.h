@@ -22,7 +22,6 @@ namespace RECS {
 		
 		event<Entity*> OnEntityCreated;
 		event<Entity*> OnEntityDestroyed;
-		event<Entity*> OnEntityChanged;
 
 		void ComponentAdded(Entity* e, ComponentType componentType);
 		void ComponentRemoved(Entity* e, ComponentType componentType);

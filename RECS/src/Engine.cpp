@@ -44,6 +44,9 @@ auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> Group*
 	{
 		Group* group = new Group(std::move(componentTypeIDs));
 		m_groups[componentTypeIDs] = group;
+		group->OnEntityChanged += [group](Entity* e) {
+			group->AddOrRemoveChangedEntity(e);
+		};
 		return group;
 	}
 	return m_groups[componentTypeIDs];
@@ -51,12 +54,12 @@ auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> Group*
 void Engine::ComponentAdded(Entity * e, ComponentType componentType)
 {
 	EntityContainer::instance().m_ComponentLists[e].push_back(componentType);
-	OnEntityChanged(e);
+	//OnEntityChanged(e);
 }
 
 void Engine::ComponentRemoved(Entity * e, ComponentType componentType)
 {
 	EntityContainer::instance().m_ComponentLists[e].remove(componentType);
-	OnEntityChanged(e);
+	//OnEntityChanged(e);
 }
 }
