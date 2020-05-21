@@ -5,6 +5,7 @@
 #include "RECSTypes.h"
 
 namespace RECS {
+
 	class ComponentContainer
 	{
 	public:

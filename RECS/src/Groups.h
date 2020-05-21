@@ -15,6 +15,7 @@ namespace RECS {
 		~Group() = default;
 
 		event<Entity*> OnEntityChanged;
+		event<Entity*> OnEntityDeleted;
 
 		void AddEntity(Entity*);
 		void RemoveEntity(Entity*);

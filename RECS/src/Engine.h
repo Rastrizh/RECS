@@ -16,7 +16,7 @@ namespace RECS {
 		~Engine() = default;
 
 		auto CreateEntity()->Entity*;
-		void KillEntity();
+		void KillEntity(Entity* e);
 		void KillAllEntities();
 		auto GetGroup(std::list<ComponentType>&& componentTypeIDs)->Group*;
 		

@@ -67,7 +67,7 @@ auto main() -> int
 	
 	Engine &engine = Engine::instance();
 
-	std::vector<Entity*> ve;
+	/*std::vector<Entity*> ve;
 	auto begin = std::chrono::steady_clock::now();
 	for (size_t i = 0; i < 150000; i++)
 	{
@@ -86,9 +86,9 @@ auto main() -> int
 	auto end2 = std::chrono::steady_clock::now();
 	auto elapsed_ms2 = std::chrono::duration_cast<std::chrono::milliseconds>(end2 - begin2);
 	std::cout << "The time: " << elapsed_ms2.count() << " ms\n";
-	
+	*/
 
-	/*Entity* e = engine.CreateEntity();
+	Entity* e = engine.CreateEntity();
 	Entity* e2 = engine.CreateEntity();
 	Entity* e3 = engine.CreateEntity();
 
@@ -100,7 +100,7 @@ auto main() -> int
 
 	e3->AddComponent<Move>(0.003F, 0.003F);
 	e3->AddComponent<Position>(0.003F, 0.003F);
-	*/
+	
 
 	MoveSystem sys;
 	auto begin3 = std::chrono::steady_clock::now();
@@ -111,6 +111,7 @@ auto main() -> int
 	
 	//e2->DeleteComponent<Move>();
 	//e2->AddComponent<Move>(0.002F, 0.002F);
+	
 
 	while (true)
 	{

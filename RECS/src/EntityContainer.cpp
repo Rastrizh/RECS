@@ -21,6 +21,13 @@ auto EntityContainer::CreateEntity() ->Entity*
 	return entity;
 }
 
+void EntityContainer::DeleteEntity(Entity* e)
+{
+	m_entityContainer[e->entityID]->~Entity();
+	m_entityContainer.erase(e->entityID);
+	m_ComponentLists.erase(e);
+}
+
 auto EntityContainer::GetGroupOfEntities(std::list<ComponentType>&& componentTypeIDs) ->std::vector<Entity*>
 {
 	std::vector<Entity*> targets;

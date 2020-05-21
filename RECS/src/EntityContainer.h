@@ -38,10 +38,16 @@ namespace RECS {
 		}
 
 	private:
-		EntityContainer() = default;
+		EntityContainer()
+		{
+			Engine::instance().OnEntityDestroyed += [&](Entity* e) {
+				DeleteEntity(e);
+			};
+		}
 
 	public:
 		auto CreateEntity()->Entity*;
+		void DeleteEntity(Entity* e);
 		auto GetGroupOfEntities(std::list<ComponentType>&& componentTypeIDs)->std::vector<Entity*>;
 	};
 }

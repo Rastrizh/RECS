@@ -32,9 +32,9 @@ auto Engine::CreateEntity() -> Entity *
 	OnEntityCreated(e);
 	return e;
 }
-void Engine::KillEntity()
+void Engine::KillEntity(Entity* e)
 {
-
+	
 }
 void Engine::KillAllEntities()
 {
