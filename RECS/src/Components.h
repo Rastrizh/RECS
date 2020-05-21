@@ -3,9 +3,9 @@
 
 #include <unordered_map>
 #include <typeinfo>
+#include "RECSTypes.h"
 
 namespace RECS {
-	using ComponentType = size_t;
 
 	class IComponent
 	{

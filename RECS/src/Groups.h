@@ -1,6 +1,8 @@
 #ifndef GROUPS_H
 #define GROUPS_H
 
+#include "RECSTypes.h"
+
 namespace RECS {
 	class Group
 	{
@@ -10,7 +12,7 @@ namespace RECS {
 
 	public:
 		Group(std::list<ComponentType>&& groupSignature);
-		~Group();
+		~Group() = default;
 
 		event<Entity*> OnEntityChanged;
 

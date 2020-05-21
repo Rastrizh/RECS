@@ -5,6 +5,7 @@
 #include <map>
 #include <unordered_map>
 #include <vector>
+#include "RECSTypes.h"
 
 #define EXPAND(...) __VA_ARGS__
 #define FUNC_1(MODIFIER, X) MODIFIER(X)
@@ -20,6 +21,8 @@
 #define CREATE_TARGET_ENTITY_ID_LIST(...) (std::list<RECS::ComponentType>({ FOR_EACH(COMPONENT_GET_TYPE_ID, __VA_ARGS__) }))
 
 namespace RECS {
+	class Entity;
+
 	class EntityContainer
 	{
 	public:

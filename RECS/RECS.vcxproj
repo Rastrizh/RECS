@@ -162,6 +162,7 @@
     <ClInclude Include="src\Events\Delegate.h" />
     <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\Groups.h" />
+    <ClInclude Include="src\RECSTypes.h" />
     <ClInclude Include="src\Systems.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

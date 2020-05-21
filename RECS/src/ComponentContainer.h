@@ -1,8 +1,8 @@
 #ifndef COMPONENT_CONTAINER_H
 #define COMPONENT_CONTAINER_H
 
-#include "Entities.h"
 #include <map>
+#include "RECSTypes.h"
 
 namespace RECS {
 	class ComponentContainer

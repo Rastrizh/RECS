@@ -3,11 +3,10 @@
 
 #include <set>
 #include "Events/Event.h"
+#include "RECSTypes.h"
+#include "EntityContainer.h"
 
 namespace RECS {
-	class EntityContainer;
-
-	using EntityID = unsigned long long;
 
 	class Entity
 	{
@@ -46,15 +45,15 @@ namespace RECS {
 			return ComponentContainer::instance().GetComponent<T>(entityID);
 		}
 
-		auto HasComponent(ComponentType) ->bool
+		auto HasComponent(ComponentType componentTypeId) ->bool
 		{
-			/*auto comp = Engine::instance().m_pEntityContainerInstance->m_ComponentLists.find(this);
-			auto it = std::find(comp->second.begin(), comp->second.end(), T::GetTypeID());
+			auto comp = EntityContainer::instance().m_ComponentLists.find(this);
+			auto it = std::find(comp->second.begin(), comp->second.end(), componentTypeId);
 
 			if (it != comp->second.end())
 				return true;
 
-			return false;*/
+			return false;
 		}
 	};
 }

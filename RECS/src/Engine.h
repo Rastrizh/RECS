@@ -1,7 +1,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
-#include "EntityContainer.h"
-#include "Groups.h"
+
+#include "RECSTypes.h"
 
 namespace RECS {
 	class Engine
