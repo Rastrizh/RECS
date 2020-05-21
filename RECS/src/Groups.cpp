@@ -21,9 +21,6 @@ void Group::RemoveEntity(Entity* e)
 
 void Group::AddOrRemoveChangedEntity(Entity *e)
 {
-	if (std::find(m_entities.begin(), m_entities.end(), e) == m_entities.end())
-		return;
-
 	for (auto & c : m_groupSignature)
 	{
 		if (e->HasComponent(c))
@@ -32,6 +29,8 @@ void Group::AddOrRemoveChangedEntity(Entity *e)
 		}
 		else
 		{
+			if (std::find(m_entities.begin(), m_entities.end(), e) == m_entities.end())
+				return;
 			RemoveEntity(e);
 			return;
 		}
