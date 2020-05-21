@@ -1,6 +1,7 @@
-#include "Components.h"
 #include "Entities.h"
 #include "Events/Event.h"
+#include "EntityContainer.h"
+#include "Groups.h"
 #include "Engine.h"
 
 namespace RECS {
@@ -40,13 +41,14 @@ void Engine::KillAllEntities()
 }
 auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> Group*
 {
-	if (m_groups[componentTypeIDs] == nullptr)
+	if (m_groups.find(componentTypeIDs) == m_groups.end())
 	{
 		Group* group = new Group(std::move(componentTypeIDs));
-		m_groups[componentTypeIDs] = group;
 		group->OnEntityChanged += [group](Entity* e) {
 			group->AddOrRemoveChangedEntity(e);
 		};
+
+		m_groups[componentTypeIDs] = group;
 		return group;
 	}
 	return m_groups[componentTypeIDs];
@@ -54,12 +56,14 @@ auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> Group*
 void Engine::ComponentAdded(Entity * e, ComponentType componentType)
 {
 	EntityContainer::instance().m_ComponentLists[e].push_back(componentType);
-	//OnEntityChanged(e);
+	for (auto g : m_groups)
+		g.second->OnEntityChanged(e);
 }
 
 void Engine::ComponentRemoved(Entity * e, ComponentType componentType)
 {
 	EntityContainer::instance().m_ComponentLists[e].remove(componentType);
-	//OnEntityChanged(e);
+	for (auto g : m_groups)
+		g.second->OnEntityChanged(e);
 }
 }

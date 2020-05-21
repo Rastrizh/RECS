@@ -3,24 +3,27 @@
 #include "Events/Event.h"
 #include "Groups.h"
 #include "Engine.h"
+#include "EntityContainer.h"
 
-RECS::Group::~Group()
+namespace RECS {
+void Group::AddEntity(Entity* e)
 {
-
+	m_entities.push_back(e);
 }
 
-void RECS::Group::AddEntity(Entity*)
+void Group::RemoveEntity(Entity* e)
 {
-
+	auto deleted = std::find(m_entities.begin(), m_entities.end(), e);
+	if (deleted == m_entities.end())
+		return;
+	m_entities.erase(deleted);
 }
 
-void RECS::Group::RemoveEntity(Entity*)
+void Group::AddOrRemoveChangedEntity(Entity *e)
 {
+	if (std::find(m_entities.begin(), m_entities.end(), e) == m_entities.end())
+		return;
 
-}
-
-void RECS::Group::AddOrRemoveChangedEntity(Entity *e)
-{
 	for (auto & c : m_groupSignature)
 	{
 		if (e->HasComponent(c))
@@ -36,13 +39,14 @@ void RECS::Group::AddOrRemoveChangedEntity(Entity *e)
 	AddEntity(e);
 }
 
-auto RECS::Group::GetEntities() ->std::vector<Entity*>&
+auto Group::GetEntities() ->std::vector<Entity*>&
 {
 	return m_entities;
 }
 
-RECS::Group::Group(std::list<ComponentType>&& groupSignature)
+Group::Group(std::list<ComponentType>&& groupSignature)
 {
 	m_groupSignature = groupSignature;
 	m_entities = EntityContainer::instance().GetGroupOfEntities(std::move(groupSignature));
+}
 }
