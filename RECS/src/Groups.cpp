@@ -1,5 +1,4 @@
 #include "Entities.h"
-#include "Events/Event.h"
 #include "Groups.h"
 #include "Engine.h"
 #include "EntityContainer.h"

@@ -1,10 +1,12 @@
 #ifndef COMPONENT_CONTAINER_H
 #define COMPONENT_CONTAINER_H
 
+#include <unordered_map>
 #include <map>
 #include "RECSTypes.h"
 
 namespace RECS {
+	class IComponent;
 
 	class ComponentContainer
 	{

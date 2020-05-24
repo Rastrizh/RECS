@@ -2,9 +2,12 @@
 #define ENGINE_H
 
 #include "RECSTypes.h"
+#include "Events/Event.h"
 #include "Groups.h"
 
 namespace RECS {
+	class Entity;
+
 	class Engine
 	{
 	private:
@@ -21,8 +24,8 @@ namespace RECS {
 		void KillAllEntities();
 		auto GetGroup(std::list<ComponentType>&& componentTypeIDs)->Group*;
 		
-		event<Entity*> OnEntityCreated;
-		event<Entity*> OnEntityDestroyed;
+		RECS::event<Entity*> OnEntityCreated;
+		RECS::event<Entity*> OnEntityDestroyed;
 
 		void ComponentAdded(Entity* e, ComponentType componentType);
 		void ComponentRemoved(Entity* e, ComponentType componentType);

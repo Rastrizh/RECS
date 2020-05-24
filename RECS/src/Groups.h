@@ -2,8 +2,11 @@
 #define GROUPS_H
 
 #include "RECSTypes.h"
+#include "Events/Event.h"
 
 namespace RECS {
+	class Entity;
+	
 	class Group
 	{
 	private:
@@ -14,8 +17,8 @@ namespace RECS {
 		Group(std::list<ComponentType>&& groupSignature);
 		~Group() = default;
 
-		event<Entity*> OnEntityChanged;
-		event<Entity*, const std::list<ComponentType>&> OnEntityDeleted;
+		RECS::event<Entity*> OnEntityChanged;
+		RECS::event<Entity*, const std::list<ComponentType>&> OnEntityDeleted;
 
 		void AddEntity(Entity*);
 		void RemoveEntity(Entity*);
