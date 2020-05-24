@@ -1,9 +1,17 @@
 #include "Components.h"
 #include "Entities.h"
+#include "Engine.h"
 #include "EntityContainer.h"
 #include <algorithm>
 
 namespace RECS {
+
+EntityContainer::EntityContainer()
+{
+	Engine::instance().OnEntityDestroyed += [&](Entity* e) {
+		DeleteEntity(e);
+	};
+}
 
 EntityContainer::~EntityContainer()
 {
@@ -26,6 +34,11 @@ void EntityContainer::DeleteEntity(Entity* e)
 	m_entityContainer[e->entityID]->~Entity();
 	m_entityContainer.erase(e->entityID);
 	m_ComponentLists.erase(e);
+}
+
+std::list<ComponentType>& EntityContainer::GetEntityComponentTypes(Entity * e)
+{
+	return m_ComponentLists[e];
 }
 
 auto EntityContainer::GetGroupOfEntities(std::list<ComponentType>&& componentTypeIDs) ->std::vector<Entity*>

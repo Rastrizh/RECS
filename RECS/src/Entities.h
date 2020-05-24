@@ -25,6 +25,8 @@ namespace RECS {
 		Entity();
 		~Entity();
 
+		std::list<ComponentType>& GetGetEntityComponentTypes();
+
 		template<typename T>
 		void DeleteComponent()
 		{

@@ -2,6 +2,7 @@
 #define ENGINE_H
 
 #include "RECSTypes.h"
+#include "Groups.h"
 
 namespace RECS {
 	class Engine

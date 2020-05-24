@@ -1,4 +1,3 @@
-#include "Components.h"
 #include "Entities.h"
 #include "Events/Event.h"
 #include "Groups.h"

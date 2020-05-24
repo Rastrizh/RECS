@@ -1,8 +1,9 @@
 #include "Entities.h"
 #include "Events/Event.h"
-#include "EntityContainer.h"
-#include "Groups.h"
 #include "Engine.h"
+#include "EntityContainer.h"
+#include "Components.h"
+#include "ComponentContainer.h"
 
 namespace RECS {
 auto Engine::instance() -> Engine &
@@ -34,7 +35,9 @@ auto Engine::CreateEntity() -> Entity *
 }
 void Engine::KillEntity(Entity* e)
 {
-	
+	std::list<ComponentType> entityComponents = e->GetGetEntityComponentTypes();
+	m_groups[entityComponents]->OnEntityDeleted(e, entityComponents);
+	OnEntityDestroyed(e);
 }
 void Engine::KillAllEntities()
 {
@@ -46,6 +49,20 @@ auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> Group*
 		Group* group = new Group(std::move(componentTypeIDs));
 		group->OnEntityChanged += [group](Entity* e) {
 			group->AddOrRemoveChangedEntity(e);
+		};
+		group->OnEntityDeleted += [group](Entity* e, const std::list<ComponentType>& componentTypes) {
+			for (auto ct : componentTypes)
+			{
+				for (auto c : ComponentContainer::instance().container[ct])
+				{
+					if (e->entityID == c.first)
+					{
+						ComponentContainer::instance().container[ct].erase(e->entityID);
+						group->RemoveEntity(e);
+						break;
+					}
+				}
+			}
 		};
 
 		m_groups[componentTypeIDs] = group;

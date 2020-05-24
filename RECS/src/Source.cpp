@@ -112,6 +112,7 @@ auto main() -> int
 	//e2->DeleteComponent<Move>();
 	//e2->AddComponent<Move>(0.002F, 0.002F);
 	
+	engine.KillEntity(e2);
 
 	while (true)
 	{

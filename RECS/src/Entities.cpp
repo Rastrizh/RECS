@@ -22,6 +22,10 @@ Entity::~Entity()
 {
 	freeIDs.insert(this->entityID);
 }
+std::list<ComponentType>& Entity::GetGetEntityComponentTypes()
+{
+	return EntityContainer::instance().GetEntityComponentTypes(this);
+}
 EntityID Entity::IDCounetr = 0;
 std::set<EntityID> Entity::freeIDs;
 }
