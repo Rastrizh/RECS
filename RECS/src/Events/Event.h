@@ -1,15 +1,16 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include "Delegate.h"
 #include <list>
+#include <functional>
+#include <utility>
 
 namespace RECS {
 
 template<class... TArgs>
 class event
 {
-	using delegateType = delegate<TArgs...>;
+	using delegateType = std::function<void(TArgs...)>;
 private:
 	std::list<delegateType> m_delegateList;
 
@@ -18,12 +19,7 @@ public:
 	{
 		m_delegateList.push_back(delegateType(_delegate));
 	}
-
-	void Connect(const std::function<void(TArgs...)>& _function)
-	{
-		m_delegateList.push_back(delegateType(_function));
-	}
-
+	
 	void Remove(const delegateType& _delegate)
 	{
 		m_delegateList.remove_if([&](delegateType& _delegate_)
@@ -38,13 +34,7 @@ public:
 		Connect(_delegate);
 		return *this;
 	}
-
-	event& operator +=(const std::function<void(TArgs...)>& _function)
-	{
-		Connect(_function);
-		return *this;
-	}
-
+	
 	event& operator -=(const delegateType& _delegate)
 	{
 		Remove(_delegate);
@@ -57,6 +47,17 @@ public:
 		{
 			_delegate(args...);
 		}
+	}
+
+	bool operator==(const delegateType& rhs) const
+	{
+		return Hash() == rhs.Hash();
+	}
+
+private:
+	size_t Hash(const delegateType& func)
+	{
+		return func.target_type().hash_code();
 	}
 };
 }
