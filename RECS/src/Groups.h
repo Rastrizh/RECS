@@ -23,6 +23,7 @@ namespace RECS {
 		void AddEntity(Entity*);
 		void RemoveEntity(Entity*);
 		void AddOrRemoveChangedEntity(Entity*);
+		auto GetSignature()->std::list<ComponentType>&;
 		auto GetEntities()->std::vector<Entity*>&;
 
 	};

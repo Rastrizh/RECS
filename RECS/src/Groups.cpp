@@ -33,7 +33,13 @@ void Group::AddOrRemoveChangedEntity(Entity *e)
 			return;
 		}
 	}
-	AddEntity(e);
+	if(std::find(m_entities.begin(), m_entities.end(), e) == m_entities.end())
+		AddEntity(e);
+}
+
+auto Group::GetSignature() ->std::list<ComponentType>&
+{
+	return m_groupSignature;
 }
 
 auto Group::GetEntities() ->std::vector<Entity*>&
