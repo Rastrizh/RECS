@@ -10,5 +10,6 @@
 #include "../src/EntityContainer.h"
 #include "../src/ComponentContainer.h"
 #include "../src/Engine.h"
+#include "../src/Timer.h"
 
 #endif

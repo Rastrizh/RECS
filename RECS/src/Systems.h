@@ -6,6 +6,7 @@
 #include "Entities.h"
 #include "Components.h"
 #include "Groups.h"
+#include "Timer.h"
 
 namespace RECS {
 	class ISystem
@@ -13,9 +14,11 @@ namespace RECS {
 	protected:
 		Group* m_targetGroup;
 	public:
+		float m_deltaTime = 1.F / 61.F;
+	public:
 		virtual ~ISystem() = default;
 		virtual void CreatePool() = 0;
-		virtual void Update() = 0;
+		virtual void Update(float deltaTime) = 0;
 	};
 }
 
