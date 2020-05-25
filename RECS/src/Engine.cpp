@@ -3,6 +3,7 @@
 #include "EntityContainer.h"
 #include "Components.h"
 #include "ComponentContainer.h"
+#include <algorithm>
 
 namespace RECS {
 auto Engine::instance() -> Engine &
@@ -34,8 +35,17 @@ auto Engine::CreateEntity() -> Entity *
 }
 void Engine::KillEntity(Entity* e)
 {
-	std::list<ComponentType> entityComponents = e->GetGetEntityComponentTypes();
-	m_groups[entityComponents]->OnEntityDeleted(e, entityComponents);
+	std::list<ComponentType> entityComponents = e->GetEntityComponentTypes();
+	for (auto g : m_groups)
+	{
+		std::list<ComponentType> temp_set;
+		entityComponents.sort();
+		g.second->GetSignature().sort();
+		std::set_intersection(entityComponents.begin(), entityComponents.end(), 
+			g.second->GetSignature().begin(), g.second->GetSignature().end(), std::back_inserter(temp_set));
+		if(temp_set == g.second->GetSignature())
+			m_groups[temp_set]->OnEntityDeleted(e, temp_set);
+	}
 	OnEntityDestroyed(e);
 }
 void Engine::KillAllEntities()
