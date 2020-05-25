@@ -4,6 +4,7 @@
 #include <list>
 #include <functional>
 #include <utility>
+#include <future>
 
 namespace RECS {
 
@@ -13,20 +14,37 @@ class event
 	using delegateType = std::function<void(TArgs...)>;
 private:
 	std::list<delegateType> m_delegateList;
+	mutable std::mutex m_delegateLocker;
 
 public:
 	void Connect(const delegateType& _delegate)
 	{
+		std::lock_guard<std::mutex> lock(m_delegateLocker);
+
 		m_delegateList.push_back(delegateType(_delegate));
 	}
 	
 	void Remove(const delegateType& _delegate)
 	{
+		std::lock_guard<std::mutex> lock(m_delegateLocker);
+
 		m_delegateList.remove_if([&](delegateType& _delegate_)
 			{
 				return _delegate == _delegate_;
 			}
 		);
+	}
+
+	void call(TArgs... params) const
+	{
+		std::list<delegateType> delegatesCopy = get_delegates_copy();
+
+		call_impl(delegatesCopy, params...);
+	}
+
+	std::future<void> call_asunc(TArgs...params) const
+	{
+		return std::async(std::launch::async, [this](TArgs... asyncParams) { call(asyncParams...); }, params...);
 	}
 
 	event& operator +=(const delegateType& _delegate)
@@ -43,10 +61,7 @@ public:
 
 	inline void operator()(TArgs...args)
 	{
-		for (const auto& _delegate : m_delegateList)
-		{
-			_delegate(args...);
-		}
+		call_asunc(args...);
 	}
 
 	bool operator==(const delegateType& rhs) const
@@ -55,6 +70,21 @@ public:
 	}
 
 private:
+	void call_impl(const std::list<delegateType>& delegatesCopy, TArgs...params) const
+	{
+		for (const auto& _delegate : m_delegateList)
+		{
+			_delegate(params...);
+		}
+	}
+
+	std::list<delegateType> get_delegates_copy() const
+	{
+		std::lock_guard<std::mutex> lock(m_delegateLocker);
+
+		return m_delegateList;
+	}
+
 	size_t Hash(const delegateType& func)
 	{
 		return func.target_type().hash_code();
