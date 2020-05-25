@@ -3,13 +3,18 @@
 
 #include <unordered_map>
 #include <map>
+#include <mutex>
 #include "RECSTypes.h"
 
 namespace RECS {
 	class IComponent;
+	class Entity;
 
 	class ComponentContainer
 	{
+	private:
+		std::mutex m_componentContainerLocker;
+
 	public:
 		std::unordered_map<ComponentType, std::map<EntityID, IComponent*>> container;
 
@@ -21,9 +26,12 @@ namespace RECS {
 		ComponentContainer() = default;
 
 	public:
+		void OnEntityDeleted(Entity* e, const std::list<ComponentType>& componentTypes);
+
 		template<typename T>
 		void DeleteComponent(EntityID ownerId)
 		{
+			std::mutex m_componentContainerLocker;
 			container[T::GetTypeID()].erase(ownerId);
 		}
 

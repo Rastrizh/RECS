@@ -35,6 +35,7 @@ auto Engine::CreateEntity() -> Entity *
 }
 void Engine::KillEntity(Entity* e)
 {
+	std::lock_guard<std::mutex> lock(m_groupsLocker);
 	std::list<ComponentType> entityComponents = e->GetEntityComponentTypes();
 	for (auto g : m_groups)
 	{
@@ -53,6 +54,7 @@ void Engine::KillAllEntities()
 }
 auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> Group*
 {
+	std::lock_guard<std::mutex> lock(m_groupsLocker);
 	if (m_groups.find(componentTypeIDs) == m_groups.end())
 	{
 		Group* group = new Group(std::move(componentTypeIDs));
@@ -60,18 +62,9 @@ auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> Group*
 			group->AddOrRemoveChangedEntity(e);
 		};
 		group->OnEntityDeleted += [group](Entity* e, const std::list<ComponentType>& componentTypes) {
-			for (auto ct : componentTypes)
-			{
-				for (auto c : ComponentContainer::instance().container[ct])
-				{
-					if (e->entityID == c.first)
-					{
-						ComponentContainer::instance().container[ct].erase(e->entityID);
-						group->RemoveEntity(e);
-						break;
-					}
-				}
-			}
+			
+			ComponentContainer::instance().OnEntityDeleted(e, componentTypes);
+			group->RemoveEntity(e);
 		};
 
 		m_groups[componentTypeIDs] = group;
@@ -81,6 +74,7 @@ auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> Group*
 }
 void Engine::ComponentAdded(Entity * e, ComponentType componentType)
 {
+	std::lock_guard<std::mutex> lock(m_groupsLocker);
 	EntityContainer::instance().m_ComponentLists[e].push_back(componentType);
 	for (auto g : m_groups)
 		g.second->OnEntityChanged(e);
@@ -88,6 +82,7 @@ void Engine::ComponentAdded(Entity * e, ComponentType componentType)
 
 void Engine::ComponentRemoved(Entity * e, ComponentType componentType)
 {
+	std::lock_guard<std::mutex> lock(m_groupsLocker);
 	EntityContainer::instance().m_ComponentLists[e].remove(componentType);
 	for (auto g : m_groups)
 		g.second->OnEntityChanged(e);

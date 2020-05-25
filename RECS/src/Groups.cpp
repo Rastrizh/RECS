@@ -6,11 +6,13 @@
 namespace RECS {
 void Group::AddEntity(Entity* e)
 {
+	std::lock_guard<std::mutex> lock(m_groupLocker);
 	m_entities.push_back(e);
 }
 
 void Group::RemoveEntity(Entity* e)
 {
+	std::lock_guard<std::mutex> lock(m_groupLocker);
 	auto deleted = std::find(m_entities.begin(), m_entities.end(), e);
 	if (deleted == m_entities.end())
 		return;

@@ -12,6 +12,7 @@ namespace RECS {
 	{
 	private:
 		std::map<std::list<ComponentType>, Group*> m_groups;
+		std::mutex m_groupsLocker;
 	private:
 		Engine();
 

@@ -12,6 +12,7 @@ namespace RECS {
 	private:
 		std::list<ComponentType> m_groupSignature;
 		std::vector<Entity*> m_entities;
+		std::mutex m_groupLocker;
 
 	public:
 		Group(std::list<ComponentType>&& groupSignature);
