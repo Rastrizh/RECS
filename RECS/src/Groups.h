@@ -19,7 +19,7 @@ namespace RECS {
 		~Group() = default;
 
 		RECS::event<Entity*> OnEntityChanged;
-		RECS::event<Entity*, const std::list<ComponentType>&> OnEntityDeleted;
+		RECS::event<Entity*> OnEntityDeleted;
 
 		void AddEntity(Entity*);
 		void RemoveEntity(Entity*);

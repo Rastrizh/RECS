@@ -6,13 +6,11 @@
 namespace RECS {
 void Group::AddEntity(Entity* e)
 {
-	std::lock_guard<std::mutex> lock(m_groupLocker);
 	m_entities.push_back(e);
 }
 
 void Group::RemoveEntity(Entity* e)
 {
-	std::lock_guard<std::mutex> lock(m_groupLocker);
 	auto deleted = std::find(m_entities.begin(), m_entities.end(), e);
 	if (deleted == m_entities.end())
 		return;
@@ -21,22 +19,17 @@ void Group::RemoveEntity(Entity* e)
 
 void Group::AddOrRemoveChangedEntity(Entity *e)
 {
-	for (auto & c : m_groupSignature)
+	if (Engine::instance().IsIntersect(Engine::instance().GetEntityComponentTypes(e), m_groupSignature) == m_groupSignature)
 	{
-		if (e->HasComponent(c))
-		{
-			continue;
-		}
-		else
-		{
-			if (std::find(m_entities.begin(), m_entities.end(), e) == m_entities.end())
-				return;
-			RemoveEntity(e);
-			return;
-		}
+		if (std::find(m_entities.begin(), m_entities.end(), e) == m_entities.end())
+			AddEntity(e);
 	}
-	if(std::find(m_entities.begin(), m_entities.end(), e) == m_entities.end())
-		AddEntity(e);
+	else
+	{
+		if (std::find(m_entities.begin(), m_entities.end(), e) == m_entities.end())
+			return;
+		RemoveEntity(e);
+	}
 }
 
 auto Group::GetSignature() ->std::list<ComponentType>&
@@ -52,6 +45,6 @@ auto Group::GetEntities() ->std::vector<Entity*>&
 Group::Group(std::list<ComponentType>&& groupSignature)
 {
 	m_groupSignature = groupSignature;
-	m_entities = EntityContainer::instance().GetGroupOfEntities(std::move(groupSignature));
+	m_entities = Engine::instance().GetGroupOfEntities(std::move(groupSignature));
 }
 }
