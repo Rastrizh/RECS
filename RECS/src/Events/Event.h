@@ -39,12 +39,12 @@ public:
 	{
 		std::list<delegateType> delegatesCopy = get_delegates_copy();
 
-		call_impl(delegatesCopy, params...);
+		call_impl(delegatesCopy, std::forward<TArgs>(params)...);
 	}
 
 	std::future<void> call_asunc(TArgs...params) const
 	{
-		return std::async(std::launch::async, [this](TArgs... asyncParams) { call(asyncParams...); }, params...);
+		return std::async(std::launch::async, [this](TArgs... asyncParams) { call(std::forward<TArgs>(asyncParams)...); }, std::forward<TArgs>(params)...);
 	}
 
 	event& operator +=(const delegateType& _delegate)
@@ -61,7 +61,7 @@ public:
 
 	inline void operator()(TArgs...args)
 	{
-		call_asunc(args...);
+		call_asunc(std::forward<TArgs>(args)...);
 	}
 
 	bool operator==(const delegateType& rhs) const
@@ -74,7 +74,7 @@ private:
 	{
 		for (const auto& _delegate : m_delegateList)
 		{
-			_delegate(params...);
+			_delegate(std::forward<TArgs>(params)...);
 		}
 	}
 
