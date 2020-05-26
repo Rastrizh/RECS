@@ -24,9 +24,7 @@ namespace RECS {
 	public:
 		Entity();
 		~Entity();
-
-		std::list<ComponentType>& GetEntityComponentTypes();
-
+		
 		template<typename T>
 		void DeleteComponent()
 		{
@@ -47,7 +45,7 @@ namespace RECS {
 			return ComponentContainer::instance().GetComponent<T>(entityID);
 		}
 
-		auto HasComponent(ComponentType componentTypeId) ->bool
+		/*auto HasComponent(ComponentType componentTypeId) ->bool
 		{
 			auto comp = EntityContainer::instance().m_ComponentLists.find(this);
 			auto it = std::find(comp->second.begin(), comp->second.end(), componentTypeId);
@@ -56,7 +54,7 @@ namespace RECS {
 				return true;
 
 			return false;
-		}
+		}*/
 	};
 }
 #endif // !ENTITIES_H
