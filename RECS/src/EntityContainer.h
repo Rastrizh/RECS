@@ -27,18 +27,11 @@ namespace RECS {
 	{
 	public:
 		std::unordered_map<EntityID, Entity*> m_entityContainer;
-
 		std::map<Entity*, std::list<ComponentType>> m_ComponentLists;
+
 	public:
 		~EntityContainer();
-		static EntityContainer& instance() 
-		{
-			static EntityContainer m_instance;
-			return m_instance;
-		}
-
-	private:
-		EntityContainer();
+		EntityContainer() = default;
 
 	public:
 		auto CreateEntity()->Entity*;

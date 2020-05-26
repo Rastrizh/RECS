@@ -6,13 +6,6 @@
 
 namespace RECS {
 
-EntityContainer::EntityContainer()
-{
-	Engine::instance().OnEntityDestroyed += [&](Entity* e) {
-		DeleteEntity(e);
-	};
-}
-
 EntityContainer::~EntityContainer()
 {
 	for (auto &p : m_entityContainer)
@@ -31,7 +24,6 @@ auto EntityContainer::CreateEntity() ->Entity*
 
 void EntityContainer::DeleteEntity(Entity* e)
 {
-	m_entityContainer[e->entityID]->~Entity();
 	m_entityContainer.erase(e->entityID);
 	m_ComponentLists.erase(e);
 }
@@ -46,10 +38,8 @@ auto EntityContainer::GetGroupOfEntities(std::list<ComponentType>&& componentTyp
 	std::vector<Entity*> targets;
 	for (auto &e : m_ComponentLists)
 	{
-		std::list<ComponentType> temp_set;
-		e.second.sort();
-		componentTypeIDs.sort();
-		std::set_intersection(e.second.begin(), e.second.end(), componentTypeIDs.begin(), componentTypeIDs.end(), std::back_inserter(temp_set));
+		std::list<ComponentType> temp_set = Engine::instance().IsIntersect(e.second, componentTypeIDs);
+		
 		if (temp_set == componentTypeIDs)
 		{
 			targets.push_back(e.first);
