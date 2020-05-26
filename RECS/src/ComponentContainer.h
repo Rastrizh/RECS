@@ -13,7 +13,7 @@ namespace RECS {
 	class ComponentContainer
 	{
 	private:
-		std::mutex m_componentContainerLocker;
+		mutable std::mutex m_componentContainerLocker;
 
 	public:
 		std::unordered_map<ComponentType, std::map<EntityID, IComponent*>> container;
@@ -23,10 +23,10 @@ namespace RECS {
 		~ComponentContainer();
 
 	private:
-		ComponentContainer() = default;
+		ComponentContainer();
 
 	public:
-		void OnEntityDeleted(Entity* e, const std::list<ComponentType>& componentTypes);
+		void OnEntityDeleted(Entity* e);
 
 		template<typename T>
 		void DeleteComponent(EntityID ownerId)

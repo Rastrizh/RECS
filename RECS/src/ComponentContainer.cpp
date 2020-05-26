@@ -1,6 +1,7 @@
 #include "Components.h"
 #include "ComponentContainer.h"
 #include "Entities.h"
+#include "Engine.h"
 
 namespace RECS {
 	auto ComponentContainer::instance() -> ComponentContainer &
@@ -9,21 +10,25 @@ namespace RECS {
 		return m_instance;
 	}
 
+	ComponentContainer::ComponentContainer()
+	{
+		Engine::instance().OnEntityDestroyed += [this](Entity * e) {
+
+			OnEntityDeleted(e);
+		};
+	}
+
 	ComponentContainer::~ComponentContainer()
 	{
 	}
-	void ComponentContainer::OnEntityDeleted(Entity * e, const std::list<ComponentType>& componentTypes)
+	void ComponentContainer::OnEntityDeleted(Entity * e)
 	{
-		std::lock_guard<std::mutex> lock(m_componentContainerLocker);
-		for (auto ct : componentTypes)
+		for (auto &ct : container)
 		{
-			for (auto c : container[ct])
+			if (ct.second.find(e->entityID) != ct.second.end())
 			{
-				if (e->entityID == c.first)
-				{
-					container[ct].erase(e->entityID);
-					break;
-				}
+				ct.second.erase(e->entityID);
+				break;
 			}
 		}
 	}
