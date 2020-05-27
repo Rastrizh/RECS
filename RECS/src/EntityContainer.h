@@ -22,16 +22,19 @@
 
 namespace RECS {
 	class Entity;
+	class Engine;
 
 	class EntityContainer
 	{
+	private:
+		Engine *m_EngineInstance;
 	public:
 		std::unordered_map<EntityID, Entity*> m_entityContainer;
 		std::map<Entity*, std::list<ComponentType>> m_ComponentLists;
 
 	public:
 		~EntityContainer();
-		EntityContainer() = default;
+		EntityContainer();
 
 	public:
 		auto CreateEntity()->Entity*;

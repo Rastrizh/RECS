@@ -15,6 +15,11 @@ EntityContainer::~EntityContainer()
 	}
 }
 
+EntityContainer::EntityContainer()
+{
+	m_EngineInstance = Engine::instance();
+}
+
 auto EntityContainer::CreateEntity() ->Entity*
 {
 	auto entity = new Entity();
@@ -38,7 +43,7 @@ auto EntityContainer::GetGroupOfEntities(std::list<ComponentType>&& componentTyp
 	std::vector<Entity*> targets;
 	for (auto &e : m_ComponentLists)
 	{
-		std::list<ComponentType> temp_set = Engine::instance().IsIntersect(e.second, componentTypeIDs);
+		std::list<ComponentType> temp_set = m_EngineInstance->IsIntersect(e.second, componentTypeIDs);
 		
 		if (temp_set == componentTypeIDs)
 		{

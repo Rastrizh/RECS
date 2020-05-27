@@ -5,8 +5,10 @@
 #include "Events/Event.h"
 #include "RECSTypes.h"
 #include "EntityContainer.h"
+#include "ComponentContainer.h"
 
 namespace RECS {
+	class ComponentContainer;
 
 	class Entity
 	{
@@ -16,6 +18,7 @@ namespace RECS {
 	private:
 		static EntityID IDCounetr;
 		static std::set<EntityID> freeIDs;
+		ComponentContainer *m_componentContainerInstance;
 
 	public:
 		event<Entity*, ComponentType> OnComponentAdded;
@@ -28,21 +31,21 @@ namespace RECS {
 		template<typename T>
 		void DeleteComponent()
 		{
-			ComponentContainer::instance().DeleteComponent<T>(entityID);
+			m_componentContainerInstance->DeleteComponent<T>(entityID);
 			OnComponentRemoved(this, T::GetTypeID());
 		}
 
 		template<typename T, class ... P>
 		void AddComponent(P&&... params)
 		{
-			ComponentContainer::instance().AddComponent<T>(entityID, std::forward<P>(params) ...);
+			m_componentContainerInstance->AddComponent<T>(entityID, std::forward<P>(params)...);
 			OnComponentAdded(this, T::GetTypeID());
 		}
 
 		template<typename T>
 		auto GetComponent() ->T*
 		{
-			return ComponentContainer::instance().GetComponent<T>(entityID);
+			return m_componentContainerInstance->GetComponent<T>(entityID);
 		}
 
 		/*auto HasComponent(ComponentType componentTypeId) ->bool

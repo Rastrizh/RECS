@@ -19,7 +19,7 @@ void Group::RemoveEntity(Entity* e)
 
 void Group::AddOrRemoveChangedEntity(Entity *e)
 {
-	if (Engine::instance().IsIntersect(Engine::instance().GetEntityComponentTypes(e), m_groupSignature) == m_groupSignature)
+	if (m_EngineInstance->IsIntersect(m_EngineInstance->GetEntityComponentTypes(e), m_groupSignature) == m_groupSignature)
 	{
 		if (std::find(m_entities.begin(), m_entities.end(), e) == m_entities.end())
 			AddEntity(e);
@@ -44,7 +44,8 @@ auto Group::GetEntities() ->std::vector<Entity*>&
 
 Group::Group(std::list<ComponentType>&& groupSignature)
 {
+	m_EngineInstance = Engine::instance();
 	m_groupSignature = groupSignature;
-	m_entities = Engine::instance().GetGroupOfEntities(std::move(groupSignature));
+	m_entities = m_EngineInstance->GetGroupOfEntities(std::move(groupSignature));
 }
 }

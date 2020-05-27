@@ -9,17 +9,19 @@
 namespace RECS {
 	class IComponent;
 	class Entity;
+	class Engine;
 
 	class ComponentContainer
 	{
 	private:
+		Engine *m_EngineInstance;
 		mutable std::mutex m_componentContainerLocker;
 
 	public:
 		std::unordered_map<ComponentType, std::map<EntityID, IComponent*>> container;
 
 	public:
-		static auto instance()->ComponentContainer&;
+		static auto instance()->ComponentContainer*;
 		~ComponentContainer();
 
 	private:
@@ -38,7 +40,7 @@ namespace RECS {
 		template<typename T, typename ... P>
 		void AddComponent(EntityID ownerId, P&&... params)
 		{
-			IComponent *component = new T(std::forward<P>(params) ...);
+			IComponent *component = new T(std::forward<P>(params)...);
 			container[T::GetTypeID()][ownerId] = component;
 		}
 

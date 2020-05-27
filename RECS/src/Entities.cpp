@@ -1,12 +1,12 @@
 #include "Components.h"
-#include "ComponentContainer.h"
-
 #include "Entities.h"
 
 namespace RECS {
 
 Entity::Entity()
 {
+	m_componentContainerInstance = ComponentContainer::instance();
+
 	if (freeIDs.empty())
 	{
 		entityID = ++IDCounetr;

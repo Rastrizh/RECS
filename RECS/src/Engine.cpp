@@ -1,15 +1,13 @@
 #include "Entities.h"
 #include "Engine.h"
 #include "EntityContainer.h"
-#include "Components.h"
-#include "ComponentContainer.h"
 #include <algorithm>
 
 namespace RECS {
-auto Engine::instance() -> Engine&
+auto Engine::instance() -> Engine*
 {
 	static Engine* instance = new Engine();
-	return *instance;
+	return instance;
 }
 
 Engine::Engine()

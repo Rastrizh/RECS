@@ -4,15 +4,16 @@
 #include "Engine.h"
 
 namespace RECS {
-	auto ComponentContainer::instance() -> ComponentContainer &
+	auto ComponentContainer::instance() -> ComponentContainer *
 	{
-		static ComponentContainer m_instance;
+		static ComponentContainer *m_instance = new ComponentContainer();
 		return m_instance;
 	}
 
 	ComponentContainer::ComponentContainer()
 	{
-		Engine::instance().OnEntityDestroyed += [this](Entity * e) {
+		m_EngineInstance = Engine::instance();
+		m_EngineInstance->OnEntityDestroyed += [this](Entity * e) {
 
 			OnEntityDeleted(e);
 		};

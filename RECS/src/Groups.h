@@ -10,6 +10,7 @@ namespace RECS {
 	class Group
 	{
 	private:
+		Engine *m_EngineInstance;
 		std::list<ComponentType> m_groupSignature;
 		std::vector<Entity*> m_entities;
 		std::mutex m_groupLocker;
