@@ -28,7 +28,7 @@ public:
 	{
 		std::lock_guard<std::mutex> lock(m_delegateLocker);
 
-		m_delegateList.remove_if([&](delegateType& _delegate_)
+		m_delegateList.remove_if([&](const delegateType& _delegate_)
 			{
 				return _delegate == _delegate_;
 			}
@@ -42,18 +42,18 @@ public:
 		call_impl(delegatesCopy, std::forward<TArgs>(params)...);
 	}
 
-	std::future<void> call_asunc(TArgs...params) const
+	auto call_asunc(TArgs...params) const ->std::future<void>
 	{
 		return std::async(std::launch::async, [this](TArgs... asyncParams) { call(std::forward<TArgs>(asyncParams)...); }, std::forward<TArgs>(params)...);
 	}
 
-	event& operator +=(const delegateType& _delegate)
+	auto operator +=(const delegateType& _delegate)->event&
 	{
 		Connect(_delegate);
 		return *this;
 	}
 	
-	event& operator -=(const delegateType& _delegate)
+	auto operator -=(const delegateType& _delegate)->event&
 	{
 		Remove(_delegate);
 		return *this;
@@ -64,7 +64,7 @@ public:
 		call_asunc(std::forward<TArgs>(args)...);
 	}
 
-	bool operator==(const delegateType& rhs) const
+	auto operator==(const delegateType& rhs) const ->bool
 	{
 		return Hash() == rhs.Hash();
 	}
@@ -78,14 +78,14 @@ private:
 		}
 	}
 
-	std::list<delegateType> get_delegates_copy() const
+	auto get_delegates_copy() const ->std::list<delegateType>
 	{
 		std::lock_guard<std::mutex> lock(m_delegateLocker);
 
 		return m_delegateList;
 	}
 
-	size_t Hash(const delegateType& func)
+	auto Hash(const delegateType& func)->size_t
 	{
 		return func.target_type().hash_code();
 	}

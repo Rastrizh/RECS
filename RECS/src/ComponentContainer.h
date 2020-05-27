@@ -22,7 +22,7 @@ namespace RECS {
 
 	public:
 		static auto instance()->ComponentContainer*;
-		~ComponentContainer();
+		~ComponentContainer() = default;
 
 	private:
 		ComponentContainer();

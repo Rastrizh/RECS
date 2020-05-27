@@ -6,7 +6,7 @@
 namespace RECS {
 	auto ComponentContainer::instance() -> ComponentContainer *
 	{
-		static ComponentContainer *m_instance = new ComponentContainer();
+		static auto *m_instance = new ComponentContainer();
 		return m_instance;
 	}
 
@@ -19,9 +19,6 @@ namespace RECS {
 		};
 	}
 
-	ComponentContainer::~ComponentContainer()
-	{
-	}
 	void ComponentContainer::OnEntityDeleted(Entity * e)
 	{
 		for (auto &ct : container)

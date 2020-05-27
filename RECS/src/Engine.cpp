@@ -6,7 +6,7 @@
 namespace RECS {
 auto Engine::instance() -> Engine*
 {
-	static Engine* instance = new Engine();
+	static auto instance = new Engine();
 	return instance;
 }
 
@@ -43,8 +43,10 @@ void Engine::KillEntity(Entity* e)
 	{
 		std::list<ComponentType> temp_set = IsIntersect(entityComponents, g.second->GetSignature());
 
-		if(temp_set == g.second->GetSignature())
+		if (temp_set == g.second->GetSignature())
+		{
 			m_groups[temp_set]->OnEntityDeleted(e);
+		}
 	}
 	OnEntityDestroyed(e);
 }
@@ -55,7 +57,7 @@ auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> Group*
 {
 	if (m_groups.find(componentTypeIDs) == m_groups.end())
 	{
-		Group* group = new Group(std::move(componentTypeIDs));
+		auto group = new Group(std::move(componentTypeIDs));
 		group->OnEntityChanged += [group](Entity* e) {
 			group->AddOrRemoveChangedEntity(e);
 		};
@@ -75,7 +77,7 @@ auto Engine::GetGroupOfEntities(std::list<ComponentType>&& componentTypeIDs) ->s
 	return m_EntityContainer->GetGroupOfEntities(std::move(componentTypeIDs));
 }
 
-std::list<ComponentType>& Engine::GetEntityComponentTypes(Entity * e)
+auto Engine::GetEntityComponentTypes(Entity * e)->std::list<ComponentType>&
 {
 	return m_EntityContainer->GetEntityComponentTypes(e);
 }
@@ -84,17 +86,21 @@ void Engine::ComponentAdded(Entity * e, ComponentType componentType)
 {
 	m_EntityContainer->m_ComponentLists[e].push_back(componentType);
 	for (auto g : m_groups)
+	{
 		g.second->OnEntityChanged(e);
+	}
 }
 
 void Engine::ComponentRemoved(Entity * e, ComponentType componentType)
 {
 	m_EntityContainer->m_ComponentLists[e].remove(componentType);
 	for (auto g : m_groups)
+	{
 		g.second->OnEntityChanged(e);
+	}
 }
 
-std::list<RECS::ComponentType> Engine::IsIntersect(std::list<ComponentType>& inWhat, std::list<ComponentType>& What)
+auto Engine::IsIntersect(std::list<ComponentType>& inWhat, std::list<ComponentType>& What)->std::list<RECS::ComponentType>
 {
 	std::list<ComponentType> ret;
 	inWhat.sort();

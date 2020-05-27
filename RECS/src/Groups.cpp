@@ -13,21 +13,27 @@ void Group::RemoveEntity(Entity* e)
 {
 	auto deleted = std::find(m_entities.begin(), m_entities.end(), e);
 	if (deleted == m_entities.end())
+	{
 		return;
+	}
 	m_entities.erase(deleted);
 }
 
 void Group::AddOrRemoveChangedEntity(Entity *e)
 {
-	if (m_EngineInstance->IsIntersect(m_EngineInstance->GetEntityComponentTypes(e), m_groupSignature) == m_groupSignature)
+	if (Engine::IsIntersect(m_EngineInstance->GetEntityComponentTypes(e), m_groupSignature) == m_groupSignature)
 	{
 		if (std::find(m_entities.begin(), m_entities.end(), e) == m_entities.end())
+		{
 			AddEntity(e);
+		}
 	}
 	else
 	{
 		if (std::find(m_entities.begin(), m_entities.end(), e) == m_entities.end())
+		{
 			return;
+		}
 		RemoveEntity(e);
 	}
 }

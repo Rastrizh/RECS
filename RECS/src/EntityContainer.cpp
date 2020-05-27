@@ -33,7 +33,7 @@ void EntityContainer::DeleteEntity(Entity* e)
 	m_ComponentLists.erase(e);
 }
 
-std::list<ComponentType>& EntityContainer::GetEntityComponentTypes(Entity * e)
+auto EntityContainer::GetEntityComponentTypes(Entity * e)->std::list<ComponentType>&
 {
 	return m_ComponentLists[e];
 }

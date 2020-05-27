@@ -33,9 +33,9 @@ namespace RECS {
 		void ComponentAdded(Entity* e, ComponentType componentType);
 
 		auto GetGroupOfEntities(std::list<ComponentType>&& componentTypeIDs)->std::vector<Entity*>;
-		std::list<ComponentType>& GetEntityComponentTypes(Entity* e);
+		auto GetEntityComponentTypes(Entity* e) ->std::list<ComponentType>&;
 
-		std::list<ComponentType> IsIntersect(std::list<ComponentType>& inWhat, std::list<ComponentType>& What);
+		static auto IsIntersect(std::list<ComponentType>& inWhat, std::list<ComponentType>& What)->std::list<ComponentType>;
 	};
 }
 

@@ -39,7 +39,7 @@ namespace RECS {
 	public:
 		auto CreateEntity()->Entity*;
 		void DeleteEntity(Entity* e);
-		std::list<ComponentType>& GetEntityComponentTypes(Entity* e);
+		auto GetEntityComponentTypes(Entity* e)->std::list<ComponentType>&;
 		auto GetGroupOfEntities(std::list<ComponentType>&& componentTypeIDs)->std::vector<Entity*>;
 	};
 }
