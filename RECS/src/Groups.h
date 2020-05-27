@@ -11,12 +11,12 @@ namespace RECS {
 	{
 	private:
 		Engine *m_EngineInstance;
-		std::list<ComponentType> m_groupSignature;
+		ComponentTypeIDList m_groupSignature;
 		std::vector<Entity*> m_entities;
 		std::mutex m_groupLocker;
 
 	public:
-		explicit Group(std::list<ComponentType>&& groupSignature);
+		explicit Group(ComponentTypeIDList&& groupSignature);
 		~Group() = default;
 
 		RECS::event<Entity*> OnEntityChanged;
@@ -25,7 +25,7 @@ namespace RECS {
 		void AddEntity(Entity* e);
 		void RemoveEntity(Entity* e);
 		void AddOrRemoveChangedEntity(Entity* e);
-		auto GetSignature()->std::list<ComponentType>&;
+		auto GetSignature()->ComponentTypeIDList&;
 		auto GetEntities()->std::vector<Entity*>&;
 
 	};

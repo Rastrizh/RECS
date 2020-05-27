@@ -12,7 +12,7 @@ namespace RECS {
 	{
 	private:
 		std::unique_ptr<EntityContainer> m_EntityContainer;
-		std::map<std::list<ComponentType>, Group*> m_groups;
+		std::map<ComponentTypeIDList, Group*> m_groups;
 		mutable std::mutex m_groupsLocker;
 	private:
 		Engine();
@@ -24,7 +24,7 @@ namespace RECS {
 		auto CreateEntity()->Entity*;
 		void KillEntity(Entity* e);
 		void KillAllEntities();
-		auto GetGroup(std::list<ComponentType>&& componentTypeIDs)->Group*;
+		auto GetGroup(ComponentTypeIDList&& componentTypeIDs)->Group*;
 		
 		RECS::event<Entity*> OnEntityCreated;
 		RECS::event<Entity*> OnEntityDestroyed;
@@ -32,10 +32,10 @@ namespace RECS {
 		void ComponentRemoved(Entity* e, ComponentType componentType);
 		void ComponentAdded(Entity* e, ComponentType componentType);
 
-		auto GetGroupOfEntities(std::list<ComponentType>&& componentTypeIDs)->std::vector<Entity*>;
-		auto GetEntityComponentTypes(Entity* e) ->std::list<ComponentType>&;
+		auto GetGroupOfEntities(ComponentTypeIDList&& componentTypeIDs)->std::vector<Entity*>;
+		auto GetEntityComponentTypes(Entity* e) ->ComponentTypeIDList&;
 
-		static auto IsIntersect(std::list<ComponentType>& inWhat, std::list<ComponentType>& What)->std::list<ComponentType>;
+		static auto IsIntersect(ComponentTypeIDList& inWhat, ComponentTypeIDList& What)->ComponentTypeIDList;
 	};
 }
 

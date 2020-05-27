@@ -38,7 +38,7 @@ void Group::AddOrRemoveChangedEntity(Entity *e)
 	}
 }
 
-auto Group::GetSignature() ->std::list<ComponentType>&
+auto Group::GetSignature() ->ComponentTypeIDList&
 {
 	return m_groupSignature;
 }
@@ -48,7 +48,7 @@ auto Group::GetEntities() ->std::vector<Entity*>&
 	return m_entities;
 }
 
-Group::Group(std::list<ComponentType>&& groupSignature)
+Group::Group(ComponentTypeIDList&& groupSignature)
 {
 	m_EngineInstance = Engine::instance();
 	m_groupSignature = groupSignature;

@@ -30,7 +30,7 @@ namespace RECS {
 		Engine *m_EngineInstance;
 	public:
 		std::unordered_map<EntityID, Entity*> m_entityContainer;
-		std::map<Entity*, std::list<ComponentType>> m_ComponentLists;
+		std::map<Entity*, ComponentTypeIDList> m_ComponentLists;
 
 	public:
 		~EntityContainer();
@@ -39,8 +39,8 @@ namespace RECS {
 	public:
 		auto CreateEntity()->Entity*;
 		void DeleteEntity(Entity* e);
-		auto GetEntityComponentTypes(Entity* e)->std::list<ComponentType>&;
-		auto GetGroupOfEntities(std::list<ComponentType>&& componentTypeIDs)->std::vector<Entity*>;
+		auto GetEntityComponentTypes(Entity* e)->ComponentTypeIDList&;
+		auto GetGroupOfEntities(ComponentTypeIDList&& componentTypeIDs)->std::vector<Entity*>;
 	};
 }
 

@@ -38,10 +38,10 @@ auto Engine::CreateEntity() -> Entity *
 }
 void Engine::KillEntity(Entity* e)
 {
-	std::list<ComponentType> entityComponents = m_EntityContainer->GetEntityComponentTypes(e);
+	ComponentTypeIDList entityComponents = m_EntityContainer->GetEntityComponentTypes(e);
 	for (auto g : m_groups)
 	{
-		std::list<ComponentType> temp_set = IsIntersect(entityComponents, g.second->GetSignature());
+		ComponentTypeIDList temp_set = IsIntersect(entityComponents, g.second->GetSignature());
 
 		if (temp_set == g.second->GetSignature())
 		{
@@ -53,7 +53,7 @@ void Engine::KillEntity(Entity* e)
 void Engine::KillAllEntities()
 {
 }
-auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> Group*
+auto Engine::GetGroup(ComponentTypeIDList&& componentTypeIDs) -> Group*
 {
 	if (m_groups.find(componentTypeIDs) == m_groups.end())
 	{
@@ -72,12 +72,12 @@ auto Engine::GetGroup(std::list<ComponentType>&& componentTypeIDs) -> Group*
 	return m_groups[componentTypeIDs];
 }
 
-auto Engine::GetGroupOfEntities(std::list<ComponentType>&& componentTypeIDs) ->std::vector<Entity*>
+auto Engine::GetGroupOfEntities(ComponentTypeIDList&& componentTypeIDs) ->std::vector<Entity*>
 {
 	return m_EntityContainer->GetGroupOfEntities(std::move(componentTypeIDs));
 }
 
-auto Engine::GetEntityComponentTypes(Entity * e)->std::list<ComponentType>&
+auto Engine::GetEntityComponentTypes(Entity * e)->ComponentTypeIDList&
 {
 	return m_EntityContainer->GetEntityComponentTypes(e);
 }
@@ -100,9 +100,9 @@ void Engine::ComponentRemoved(Entity * e, ComponentType componentType)
 	}
 }
 
-auto Engine::IsIntersect(std::list<ComponentType>& inWhat, std::list<ComponentType>& What)->std::list<RECS::ComponentType>
+auto Engine::IsIntersect(ComponentTypeIDList& inWhat, ComponentTypeIDList& What)->std::list<RECS::ComponentType>
 {
-	std::list<ComponentType> ret;
+	ComponentTypeIDList ret;
 	inWhat.sort();
 	What.sort();
 	std::set_intersection(inWhat.begin(), inWhat.end(),	What.begin(), What.end(), std::back_inserter(ret));

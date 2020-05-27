@@ -33,17 +33,17 @@ void EntityContainer::DeleteEntity(Entity* e)
 	m_ComponentLists.erase(e);
 }
 
-auto EntityContainer::GetEntityComponentTypes(Entity * e)->std::list<ComponentType>&
+auto EntityContainer::GetEntityComponentTypes(Entity * e)->ComponentTypeIDList&
 {
 	return m_ComponentLists[e];
 }
 
-auto EntityContainer::GetGroupOfEntities(std::list<ComponentType>&& componentTypeIDs) ->std::vector<Entity*>
+auto EntityContainer::GetGroupOfEntities(ComponentTypeIDList&& componentTypeIDs) ->std::vector<Entity*>
 {
 	std::vector<Entity*> targets;
 	for (auto &e : m_ComponentLists)
 	{
-		std::list<ComponentType> temp_set = m_EngineInstance->IsIntersect(e.second, componentTypeIDs);
+		ComponentTypeIDList temp_set = m_EngineInstance->IsIntersect(e.second, componentTypeIDs);
 		
 		if (temp_set == componentTypeIDs)
 		{
