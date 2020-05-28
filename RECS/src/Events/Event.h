@@ -35,17 +35,10 @@ public:
 			}
 		);
 	}
-
-	void call(TArgs... params) const
-	{
-		std::list<delegateType> delegatesCopy = get_delegates_copy();
-
-		call_impl(delegatesCopy, std::forward<TArgs>(params)...);
-	}
-
+	
 	auto call_asunc(TArgs...params) const ->std::future<void>
 	{
-		return std::async(std::launch::async, [this](TArgs... asyncParams) { call(std::forward<TArgs>(asyncParams)...); }, std::forward<TArgs>(params)...);
+		return std::async(std::launch::async, &event::call_impl, &(*this), std::forward<TArgs>(params)...);
 	}
 
 	auto operator +=(const delegateType& _delegate)->event&
@@ -72,7 +65,7 @@ public:
 	}
 
 private:
-	void call_impl(const std::list<delegateType>& delegatesCopy, TArgs...params) const
+	void call_impl(TArgs...params) const
 	{
 		for (const auto& _delegate : m_delegateList)
 		{
