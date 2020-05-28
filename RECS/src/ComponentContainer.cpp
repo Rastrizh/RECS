@@ -21,6 +21,7 @@ namespace RECS {
 
 	void ComponentContainer::OnEntityDeleted(Entity * e)
 	{
+		std::lock_guard<std::mutex> Lock(m_componentContainerLocker);
 		for (auto &ct : container)
 		{
 			if (ct.second.find(e->entityID) != ct.second.end())

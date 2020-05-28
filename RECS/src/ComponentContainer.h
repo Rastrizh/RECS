@@ -33,14 +33,14 @@ namespace RECS {
 		template<typename T>
 		void DeleteComponent(EntityID ownerId)
 		{
-			std::mutex m_componentContainerLocker;
+			std::lock_guard<std::mutex> Lock(m_componentContainerLocker);
 			container[T::GetTypeID()].erase(ownerId);
 		}
 
 		template<typename T, typename ... P>
 		void AddComponent(EntityID ownerId, P&&... params)
 		{
-			std::mutex m_componentContainerLocker;
+			std::lock_guard<std::mutex> Lock(m_componentContainerLocker);
 			IComponent *component = new T(std::forward<P>(params)...);
 			container[T::GetTypeID()][ownerId] = component;
 		}
@@ -48,6 +48,7 @@ namespace RECS {
 		template<typename T>
 		auto GetComponent(EntityID ownerId) ->T*
 		{
+			std::lock_guard<std::mutex> Lock(m_componentContainerLocker);
 			return (T*)container[T::GetTypeID()][ownerId];
 		}
 

@@ -39,6 +39,7 @@ auto Engine::CreateEntity() -> Entity *
 void Engine::KillEntity(Entity* e)
 {
 	ComponentTypeIDList entityComponents = m_EntityContainer->GetEntityComponentTypes(e);
+	entityComponents.sort();
 	for (auto g : m_groups)
 	{
 		ComponentTypeIDList temp_set = IsIntersect(entityComponents, g.second->GetSignature());
@@ -103,8 +104,6 @@ void Engine::ComponentRemoved(Entity * e, ComponentType componentType)
 auto Engine::IsIntersect(ComponentTypeIDList& inWhat, ComponentTypeIDList& What)->std::list<RECS::ComponentType>
 {
 	ComponentTypeIDList ret;
-	inWhat.sort();
-	What.sort();
 	std::set_intersection(inWhat.begin(), inWhat.end(),	What.begin(), What.end(), std::back_inserter(ret));
 	return ret;
 }

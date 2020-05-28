@@ -29,6 +29,7 @@ namespace RECS {
 	public:
 		std::unordered_map<EntityID, Entity*> m_entityContainer;
 		std::map<Entity*, ComponentTypeIDList> m_ComponentLists;
+		std::mutex m_entityContainerLocker;
 
 	public:
 		~EntityContainer();
