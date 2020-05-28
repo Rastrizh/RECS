@@ -25,8 +25,10 @@ namespace RECS {
 		{
 			if (ct.second.find(e->entityID) != ct.second.end())
 			{
+				auto c = ct.second[e->entityID];
 				ct.second.erase(e->entityID);
-				break;
+				delete c;
+				c = nullptr;
 			}
 		}
 	}

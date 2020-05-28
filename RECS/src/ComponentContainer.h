@@ -40,6 +40,7 @@ namespace RECS {
 		template<typename T, typename ... P>
 		void AddComponent(EntityID ownerId, P&&... params)
 		{
+			std::mutex m_componentContainerLocker;
 			IComponent *component = new T(std::forward<P>(params)...);
 			container[T::GetTypeID()][ownerId] = component;
 		}
