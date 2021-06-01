@@ -1,63 +1,79 @@
-#ifndef ENTITIES_H
-#define ENTITIES_H
+#ifndef ENTITY_H
+#define ENTITY_H
 
 #include <set>
-#include "Events/Event.h"
 #include "RECSTypes.h"
-#include "EntityContainer.h"
-#include "ComponentContainer.h"
+#include "Events/Event.h"
+#include "ComponentManager.h"
 
 namespace RECS {
-	class ComponentContainer;
 
-	class Entity
+class Engine;
+class IComponent;
+
+class Entity
+{
+public:
+	entityID EntityID;
+	bool isUpdateble;
+
+	event<entityID, ComponentTypeID, IComponent*> OnComponentAdded;
+	event<entityID, ComponentTypeID> OnComponentRemoved;
+
+	event<Entity*> OnEntityCreated;
+	event<entityID> OnEntityDestroyed;
+
+private:
+	static entityID IDCounetr;
+	static std::set<entityID> freeIDs;
+public:
+	Entity()
 	{
-	public:
-		EntityID entityID;
-
-	private:
-		static EntityID IDCounetr;
-		static std::set<EntityID> freeIDs;
-		ComponentContainer *m_componentContainerInstance;
-
-	public:
-		event<Entity*, ComponentType> OnComponentAdded;
-		event<Entity*, ComponentType> OnComponentRemoved;
-
-	public:
-		Entity();
-		~Entity();
-		
-		template<typename T>
-		void DeleteComponent()
+		if (freeIDs.empty())
 		{
-			m_componentContainerInstance->DeleteComponent<T>(entityID);
-			OnComponentRemoved(this, T::GetTypeID());
+			EntityID = ++IDCounetr;
 		}
-
-		template<typename T, class ... P>
-		void AddComponent(P&&... params)
+		else
 		{
-			m_componentContainerInstance->AddComponent<T>(entityID, std::forward<P>(params)...);
-			OnComponentAdded(this, T::GetTypeID());
+			EntityID = *freeIDs.begin();
+			freeIDs.erase(freeIDs.begin());
 		}
+		isUpdateble = false;
+	}
+	Entity(const Entity& e)
+		: EntityID(e.EntityID), isUpdateble(e.isUpdateble)
+	{
+	}
+	~Entity()
+	{
+		//freeIDs.insert(this->EntityID);
+	}
 
-		template<typename T>
-		auto GetComponent() ->T*
-		{
-			return m_componentContainerInstance->GetComponent<T>(entityID);
-		}
+	template<typename T, class ... P>
+	void AddComponent(P&&... params)
+	{
+		IComponent* new_component = ComponentManager::AddComponent<T>(std::forward<P>(params)...);
+		OnComponentAdded(this->EntityID, T::GetTypeID(), new_component);
+	}
+	template<typename T>
+	void DeleteComponent()
+	{
+		ComponentManager::DeleteComponent<T>(T::GetTypeID(), GetComponent<T>(EntityID));
+		OnComponentRemoved(this->EntityID, T::GetTypeID());
+	}
+	template<class T>
+	T* GetComponent()
+	{
+		return Engine::getComponent<T>(EntityID);
+	}
+	template<class T>
+	auto HasComponent()
+	{
 
-		/*auto HasComponent(ComponentType componentTypeId) ->bool
-		{
-			auto comp = EntityContainer::instance().m_ComponentLists.find(this);
-			auto it = std::find(comp->second.begin(), comp->second.end(), componentTypeId);
+	}
+};
 
-			if (it != comp->second.end())
-				return true;
-
-			return false;
-		}*/
-	};
+entityID Entity::IDCounetr = 0;
+std::set<entityID> Entity::freeIDs;
 }
-#endif // !ENTITIES_H
+#endif // !ENTITY_H
