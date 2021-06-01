@@ -7,7 +7,6 @@
 #include <future>
 
 namespace RECS {
-
 template<class... TArgs>
 class event
 {
@@ -45,7 +44,8 @@ public:
 
 	auto call_asunc(TArgs...params) const ->std::future<void>
 	{
-		return std::async(std::launch::async, [this](TArgs... asyncParams) { call(std::forward<TArgs>(asyncParams)...); }, std::forward<TArgs>(params)...);
+		return std::async(std::launch::async,
+			&event::call, this, std::forward<TArgs>(params)...);
 	}
 
 	auto operator +=(const delegateType& _delegate)->event&
@@ -62,8 +62,10 @@ public:
 
 	inline void operator()(TArgs...args)
 	{
-		std::lock_guard<std::mutex> Lock(m_delegateLocker);
+		//std::lock_guard<std::mutex> Lock(m_delegateLocker);
 		m_Futures.push_back(call_asunc(std::forward<TArgs>(args)...));
+		for (auto& f : m_Futures)
+			f.wait();
 	}
 
 	auto operator==(const delegateType& rhs) const ->bool
