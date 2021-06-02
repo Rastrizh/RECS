@@ -21,15 +21,15 @@ namespace RECS {
 			s_entity_lookup_table[e->EntityID] = e;
 			return e;
 		}
-		static bool IsUpdateble(entityID eid)
+		static bool IsUpdateble(const entityID& eid)
 		{
 			return s_entity_lookup_table[eid]->isUpdateble;
 		}
-		static Entity* getEntityPtr(entityID eid)
+		static Entity* getEntityPtr(const entityID& eid)
 		{
 			return s_entity_lookup_table[eid];
 		}
-		static void DeleteEntity(entityID e)
+		static void DeleteEntity(const entityID& e)
 		{
 			s_entityManager_allocator.dealloc(s_entity_lookup_table[e]);
 		}

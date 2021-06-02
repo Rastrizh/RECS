@@ -78,7 +78,7 @@ private:
 	static std::unordered_multimap<ComponentTypeID, IComponentContainer*> m_component_containers;
 
 public:
-	static void DeleteEntity(entityID eid, const std::map<ComponentTypeID, IComponent*>& comps)
+	static void DeleteEntity(const std::map<ComponentTypeID, IComponent*>& comps)
 	{
 		IComponentContainer* ret;
 		for (const auto &c : comps)
