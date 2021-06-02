@@ -12,7 +12,7 @@ private:
 	void* head;
 	size_t m_element_size;
 public:
-	PoolAllocator(size_t elem_size, size_t num_elems)
+	PoolAllocator(size_t&& elem_size, size_t&& num_elems)
 		: Allocator(num_elems * elem_size), m_element_size{ elem_size }
 {
 	if (m_element_size < sizeof(size_t))
@@ -25,7 +25,7 @@ public:
 	initialize();
 }
 
-PoolAllocator(void* start_ptr, size_t elem_size, size_t num_elems)
+PoolAllocator(void* start_ptr, size_t&& elem_size, size_t&& num_elems)
 	: Allocator(num_elems * elem_size), m_start_ptr{ start_ptr }, m_element_size{ elem_size }
 {
 	if (m_element_size < sizeof(size_t))
@@ -35,36 +35,6 @@ PoolAllocator(void* start_ptr, size_t elem_size, size_t num_elems)
 	}
 	head = m_start_ptr;
 	initialize();
-}
-
-PoolAllocator(const PoolAllocator& other)
-	: Allocator(other.m_stats.total_size), m_start_ptr{ other.m_start_ptr }, head{ other.head }, m_element_size{ other.m_element_size }
-{
-}
-PoolAllocator& operator=(const PoolAllocator& other)
-{
-	if (&other == this)
-		return *this;
-	m_stats += other.m_stats;
-	m_start_ptr = other.m_start_ptr;
-	head = other.head; 
-	m_element_size =other.m_element_size;
-	return *this;
-}
-
-PoolAllocator(PoolAllocator&& other)
-	: Allocator(other.m_stats.total_size), m_start_ptr{ other.m_start_ptr }, head{ other.head }, m_element_size{ other.m_element_size }
-{
-}
-PoolAllocator& operator=(PoolAllocator&& other)
-{
-	if (&other == this)
-		return *this;
-	m_stats += other.m_stats;
-	m_start_ptr = other.m_start_ptr;
-	head = other.head;
-	m_element_size = other.m_element_size;
-	return *this;
 }
 
 virtual ~PoolAllocator() override

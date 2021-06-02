@@ -16,13 +16,13 @@ public:
 	{
 		m_start_ptr = malloc(m_stats.total_size);
 	}
-	LinearAllocator(const size_t init_size)
-		: Allocator(init_size), m_curr_offset{ 0 }
+	LinearAllocator(size_t&& init_size)
+		: Allocator(std::move(init_size)), m_curr_offset{ 0 }
 	{
 		m_start_ptr = malloc(m_stats.total_size);
 	}
-	LinearAllocator(void* start_ptr, const size_t init_size)
-		: Allocator(init_size), m_start_ptr{ start_ptr }, m_curr_offset{ 0 }
+	LinearAllocator(void* start_ptr, size_t&& init_size)
+		: Allocator(std::move(init_size)), m_start_ptr{ start_ptr }, m_curr_offset{ 0 }
 	{
 	}
 	virtual ~LinearAllocator() override

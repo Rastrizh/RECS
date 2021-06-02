@@ -21,13 +21,13 @@ public:
 	{
 		m_start_ptr = malloc(m_stats.total_size);
 	}
-	StackAllocator(size_t size)
-		: Allocator(size), m_curr_offset{ 0 }
+	StackAllocator(size_t&& size)
+		: Allocator(std::move(size)), m_curr_offset{ 0 }
 	{
 		m_start_ptr = malloc(m_stats.total_size);
 	}
 	StackAllocator(void* start_ptr, size_t size)
-		: Allocator(size), m_start_ptr{ start_ptr }, m_curr_offset{ 0 }
+		: Allocator(std::move(size)), m_start_ptr{ start_ptr }, m_curr_offset{ 0 }
 	{
 	}
 	virtual ~StackAllocator() override

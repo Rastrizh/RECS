@@ -12,7 +12,7 @@
 
 namespace RECS { namespace memory {
 
-size_t calculateAdjustment(uintptr_t address, uintptr_t align);
+size_t calculateAdjustment(const uintptr_t& address, const uintptr_t& align);
 
 struct AllocatorStats
 {
@@ -43,7 +43,7 @@ class Allocator
 public:
 	AllocatorStats m_stats;
 public:
-	Allocator(size_t size) : m_stats{ size, 0, 0 } {}
+	Allocator(size_t&& size) : m_stats{ size, 0, 0 } {}
 	virtual ~Allocator() { m_stats = { 0,0,0 }; }
 
 	virtual void* allocate(size_t size, u8 alignment) = 0;
