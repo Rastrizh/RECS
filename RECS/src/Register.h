@@ -36,8 +36,8 @@ public:
 
 		};
 		e->OnEntityDestroyed += [](entityID eid) {
+			ComponentManager::DeleteEntity(eid, s_entity_components[eid]);
 			EntityManager::DeleteEntity(eid);
-			ComponentManager::DeleteEntity(eid);
 		};
 
 		e->OnComponentAdded += [](entityID eid, ComponentTypeID cid, IComponent* component) {
@@ -53,10 +53,10 @@ public:
 	static void KillEntity(entityID eid)
 	{
 		std::lock_guard<std::mutex> Lock(s_Engine_lock);
+		EntityManager::getEntityPtr(eid)->OnEntityDestroyed(eid);
 		s_entity_components.erase(eid);
 		for (auto& s : s_entity_table)
 			s.second.erase(eid);
-		EntityManager::getEntityPtr(eid)->OnEntityDestroyed(eid);
 	}
 	static void KillAllEntities()
 	{

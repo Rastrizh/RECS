@@ -10,14 +10,18 @@
 #include "memory/ChunkAllocator.h"
 #include "RECSTypes.h"
 
-#define CONTAINER_CHUNK_SIZE 640
+#define CONTAINER_CHUNK_SIZE 100
 #define MAX_CONTAINER_COUNT 64
 
 namespace RECS{
 class ComponentManager
 {
 private:
-	class IComponentContainer { };
+	class IComponentContainer 
+	{
+	public:
+		virtual void erase(IComponent*) = 0;
+	};
 
 	template<class T>
 	class ComponentContainer : public IComponentContainer
@@ -32,6 +36,7 @@ private:
 			:
 			m_container_allocator(ptr, m_size, "Component container")
 		{
+			assert(ptr && "Pointer is nullptr");
 			RINFO("Component container of {}", typeid(T).name());
 		}
 		template<class ...P>
@@ -47,12 +52,18 @@ private:
 			}
 			IComponent* component = new(place) T(std::forward<P>(params)...);
 			m_used += sizeof(T);
+			RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "Emplace",
+				"\nline: ", m_container_allocator.line.m_stats.ToString(),
+				"\nPool: ", m_container_allocator.pool.m_stats.ToString());
 			return component;
 		}
-		void erase(T* component)
+		virtual void erase(IComponent* component) final
 		{
-			m_container_allocator.dealloc(component);
+			m_container_allocator.dealloc((T*)component);
 			m_used -= sizeof(T);
+			RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "Erase", 
+				"\nline: ", m_container_allocator.line.m_stats.ToString(), 
+				"\nPool: ", m_container_allocator.pool.m_stats.ToString());
 		}
 	private:
 		void* grow()
@@ -67,9 +78,18 @@ private:
 	static std::unordered_multimap<ComponentTypeID, IComponentContainer*> m_component_containers;
 
 public:
-	static void DeleteEntity(entityID eid)
+	static void DeleteEntity(entityID eid, const std::map<ComponentTypeID, IComponent*>& comps)
 	{
-
+		IComponentContainer* ret;
+		for (const auto &c : comps)
+		{
+			auto range = m_component_containers.equal_range(c.first);
+			if (range.first == range.second)
+				ret = nullptr;
+			else
+				ret = (--range.second)->second;
+			ret->erase(c.second);
+		}
 	}
 	template<class T, class ...P>
 	static IComponent* AddComponent(P&&... params)
