@@ -69,7 +69,7 @@ public:
 	template<class T>
 	auto HasComponent()
 	{
-
+		return Engine::hasComponent<T>(EntityID);
 	}
 };
 

@@ -27,7 +27,6 @@ public:
 	static std::map<ComponentTypeID, std::set<entityID>> s_entity_table;
 
 public:
-
 	static Entity* CreateEntity()
 	{
 		auto e = EntityManager::CreateEntity();
@@ -36,7 +35,7 @@ public:
 
 		};
 		e->OnEntityDestroyed += [](entityID eid) {
-			ComponentManager::DeleteEntity(eid, s_entity_components[eid]);
+			ComponentManager::DeleteEntity(s_entity_components[eid]);
 			EntityManager::DeleteEntity(eid);
 		};
 
@@ -60,7 +59,10 @@ public:
 	}
 	static void KillAllEntities()
 	{
-
+		for (auto &e : s_entity_components)
+		{
+			KillEntity(e.first);
+		}
 	}
 
 	template<class ... Args>
@@ -86,6 +88,12 @@ public:
 	{
 		std::lock_guard<std::mutex> Lock(s_Engine_lock);
 		return (T*)s_entity_components[eid][T::GetTypeID()];
+	}
+	template<class T>
+	static bool hasComponent(const entityID& eid)
+	{
+		std::lock_guard<std::mutex> Lock(s_Engine_lock);
+		return !s_entity_components[eid].empty();
 	}
 	static void ComponentAdded(const entityID& eid, const ComponentTypeID& componentType, IComponent* component)
 	{
