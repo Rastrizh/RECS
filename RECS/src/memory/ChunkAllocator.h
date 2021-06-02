@@ -42,7 +42,7 @@ public:
 		void* ret = pool.allocate(size, alignof(T));
 		if (ret == nullptr)
 		{
-			RINFO("{}", owner);
+			RINFO("Chunk allocator of {}", owner);
 			RINFO("Stats {} {}", "line: ", line.m_stats.ToString());
 			RINFO("Stats {} {}", "Pool: ", pool.m_stats.ToString());
 

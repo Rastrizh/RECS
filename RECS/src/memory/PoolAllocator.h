@@ -64,6 +64,8 @@ void free(void* ptr) override
 {
 	*(void**)ptr = head;
 	head = ptr;
+	m_stats.current_usage -= m_element_size;
+	m_stats.num_allocations--;
 }
 
 void clear() override
