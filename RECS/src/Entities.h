@@ -16,6 +16,7 @@ class Entity
 public:
 	entityID EntityID;
 	bool isUpdateble;
+	static entityID IDCouneter;
 
 	event<entityID, ComponentTypeID, IComponent*> OnComponentAdded;
 	event<entityID, ComponentTypeID> OnComponentRemoved;
@@ -24,14 +25,13 @@ public:
 	event<entityID> OnEntityDestroyed;
 
 private:
-	static entityID IDCounetr;
 	static std::set<entityID> freeIDs;
 public:
 	Entity()
 	{
 		if (freeIDs.empty())
 		{
-			EntityID = ++IDCounetr;
+			EntityID = ++IDCouneter;
 		}
 		else
 		{
@@ -64,6 +64,8 @@ public:
 	template<class T>
 	T* GetComponent()
 	{
+		for(auto & f : OnComponentAdded.m_Futures)
+			f.wait();
 		return Engine::getComponent<T>(EntityID);
 	}
 	template<class T>
@@ -73,7 +75,7 @@ public:
 	}
 };
 
-entityID Entity::IDCounetr = 0;
+entityID Entity::IDCouneter = 0;
 std::set<entityID> Entity::freeIDs;
 }
 #endif // !ENTITY_H

@@ -11,9 +11,10 @@ template<class... TArgs>
 class event
 {
 	using delegateType = std::function<void(TArgs...)>;
+	public:
+		std::vector<std::future<void>> m_Futures;
 private:
 	std::list<delegateType> m_delegateList;
-	std::vector<std::future<void>> m_Futures;
 	mutable std::mutex m_delegateLocker;
 
 public:
@@ -62,10 +63,7 @@ public:
 
 	inline void operator()(TArgs...args)
 	{
-		//std::lock_guard<std::mutex> Lock(m_delegateLocker);
 		m_Futures.push_back(call_asunc(std::forward<TArgs>(args)...));
-		for (auto& f : m_Futures)
-			f.wait();
 	}
 
 	auto operator==(const delegateType& rhs) const ->bool
