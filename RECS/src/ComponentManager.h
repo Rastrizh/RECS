@@ -27,6 +27,7 @@ private:
 	class ComponentContainer : public IComponentContainer
 	{
 	private:
+		std::mutex m_compContainer_mutex;
 		size_t m_size = sizeof(T) * CONTAINER_CHUNK_SIZE;
 		size_t m_used = 0;
 		memory::ChunkAllocator<T> m_container_allocator;
@@ -42,6 +43,7 @@ private:
 		template<class ...P>
 		IComponent* Emplace(P&&... params)
 		{
+			std::lock_guard<std::mutex> lock(m_compContainer_mutex);
 			if (m_used + sizeof(T) > m_size)
 				grow();
 
@@ -50,7 +52,11 @@ private:
 			{
 				place = grow();
 			}
-			IComponent* component = new(place) T(std::forward<P>(params)...);
+			IComponent* component = nullptr;
+			if constexpr (sizeof...(P) > 0)
+				component = new(place) T{ {}, std::forward<P>(params)... };
+			else
+				component = new(place) T(std::forward<P>(params)...);
 			m_used += sizeof(T);
 			RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "Emplace",
 				"\nline: ", m_container_allocator.line.m_stats.ToString(),
@@ -59,6 +65,7 @@ private:
 		}
 		virtual void erase(IComponent* component) final
 		{
+			std::lock_guard<std::mutex> lock(m_compContainer_mutex);
 			m_container_allocator.dealloc((T*)component);
 			m_used -= sizeof(T);
 			RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "Erase", 
@@ -73,6 +80,8 @@ private:
 		}
 	}; // class ComponentContainer
 
+public:
+	static std::mutex s_compManager_mutex;
 private:
 	static memory::StackAllocator m_compManager_allocator;
 	static std::unordered_multimap<ComponentTypeID, IComponentContainer*> m_component_containers;
@@ -80,6 +89,7 @@ private:
 public:
 	static void DeleteEntity(const std::map<ComponentTypeID, IComponent*>& comps)
 	{
+		std::lock_guard<std::mutex> lock(s_compManager_mutex);
 		IComponentContainer* ret;
 		for (const auto &c : comps)
 		{
@@ -125,6 +135,7 @@ private:
 	template<class T>
 	static ComponentContainer<T>* CreateComponentContainer()
 	{
+		std::lock_guard<std::mutex> lock(s_compManager_mutex);
 		auto ret = new ComponentContainer<T>(m_compManager_allocator.allocate(sizeof(T) * CONTAINER_CHUNK_SIZE, alignof(T)));
 		m_component_containers.insert({ T::GetTypeID(), (IComponentContainer*)ret });
 		return ret;
@@ -135,6 +146,8 @@ memory::StackAllocator ComponentManager::m_compManager_allocator{
 	memory::MemoryManager::NewMemoryUser(typeid(ComponentManager).name(), MAX_CONTAINER_COUNT * MEBIBYTE), MAX_CONTAINER_COUNT * MEBIBYTE };
 
 std::unordered_multimap<ComponentTypeID, ComponentManager::IComponentContainer*> ComponentManager::m_component_containers;
+
+std::mutex ComponentManager::s_compManager_mutex;
 
 }//namespace RECS
 

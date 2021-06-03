@@ -8,24 +8,13 @@
 namespace RECS {
 
 	class IComponent
-	{
-	public:
-		virtual ~IComponent() = default;
-	}; // Class IComponent
+	{};
 
 	template<class T>
 	class Component : public IComponent
 	{
 	public:
-		~Component() override = default;
-	private:
-		static const size_t STATIC_COMONENT_TYPE_ID;
-	public:
-		static auto GetTypeID() -> size_t { return STATIC_COMONENT_TYPE_ID; }
+		static auto GetTypeID() -> size_t { return typeid(T).hash_code(); }
 	}; // Class Component
-
-	template<class T>
-	const size_t Component<T>::STATIC_COMONENT_TYPE_ID = typeid(T).hash_code();
-
 }
 #endif // !COMPONENTS_H
