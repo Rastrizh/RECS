@@ -42,9 +42,9 @@ public:
 		void* ret = pool.allocate(size, alignof(T));
 		if (ret == nullptr)
 		{
-			RINFO("Chunk allocator of {}", owner);
-			RINFO("Stats {} {}", "line: ", line.m_stats.ToString());
-			RINFO("Stats {} {}", "Pool: ", pool.m_stats.ToString());
+			//RINFO("Chunk allocator of {}", owner);
+			//RINFO("Stats {} {}", "line: ", line.m_stats.ToString());
+			//RINFO("Stats {} {}", "Pool: ", pool.m_stats.ToString());
 
 			void* new_pool_start = line.allocate(sizeof(T) * CHUNK_SIZE, alignof(T));
 			if (!new_pool_start)
@@ -57,8 +57,14 @@ public:
 		}
 		return ret;
 	}
-	void dealloc(void* ptr) { pool.free(ptr); }
+	void dealloc(void* ptr) { ((T*)ptr)->~T(); pool.free(ptr); }
 	size_t getBlockSize() { return pool.getBlockSize(); }
+
+	T* operator[](size_t index) 
+	{ 
+		void* ret = pool[index];
+		assert(ret && "Incorrect index, no data in that location"); 
+		return (T*)ret; }
 
 }; // class ChunkAllocator 
 

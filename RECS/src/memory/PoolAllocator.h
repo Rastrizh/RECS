@@ -80,6 +80,11 @@ void* getHead() { return head; }
 
 void setHead(void* ptr) { head = ptr; }
 
+void* operator[](size_t index)
+{
+	return (m_element_size * index) < m_stats.total_size ? (void*)((uintptr_t)m_start_ptr + (uintptr_t)(m_element_size * index)) : nullptr;
+}
+
 private:
 	void initialize()
 	{
