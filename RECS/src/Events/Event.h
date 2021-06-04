@@ -10,12 +10,12 @@ namespace RECS {
 template<class... TArgs>
 class event
 {
-	using delegateType = std::function<void(TArgs...)>;
-	public:
-		std::vector<std::future<void>> m_Futures;
 private:
+	using delegateType = std::function<void(TArgs...)>;
 	std::list<delegateType> m_delegateList;
 	mutable std::mutex m_delegateLocker;
+public:
+	std::list<std::future<void>> m_Futures;
 
 public:
 	void Connect(const delegateType& _delegate)
@@ -43,19 +43,19 @@ public:
 		call_impl(delegatesCopy, std::forward<TArgs>(params)...);
 	}
 
-	auto call_asunc(TArgs...params) const ->std::future<void>
+	/*std::future<void>*/void call_asunc(TArgs...params) const
 	{
-		return std::async(std::launch::async,
+		std::async(std::launch::async,
 			&event::call, this, std::forward<TArgs>(params)...);
 	}
 
-	auto operator +=(const delegateType& _delegate)->event&
+	event& operator +=(const delegateType& _delegate)
 	{
 		Connect(_delegate);
 		return *this;
 	}
 	
-	auto operator -=(const delegateType& _delegate)->event&
+	event& operator -=(const delegateType& _delegate)
 	{
 		Remove(_delegate);
 		return *this;
@@ -63,10 +63,10 @@ public:
 
 	inline void operator()(TArgs...args)
 	{
-		m_Futures.push_back(call_asunc(std::forward<TArgs>(args)...));
+		/*m_Futures.push_back(*/call_asunc(std::forward<TArgs>(args)...);
 	}
 
-	auto operator==(const delegateType& rhs) const ->bool
+	bool operator==(const delegateType& rhs) const
 	{
 		return Hash() == rhs.Hash();
 	}
@@ -80,14 +80,14 @@ private:
 		}
 	}
 
-	auto get_delegates_copy() const ->std::list<delegateType>
+	std::list<delegateType> get_delegates_copy() const
 	{
 		std::lock_guard<std::mutex> lock(m_delegateLocker);
 
 		return m_delegateList;
 	}
 
-	auto Hash(const delegateType& func)->size_t
+	size_t Hash(const delegateType& func)
 	{
 		return func.target_type().hash_code();
 	}
