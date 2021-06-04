@@ -1,7 +1,7 @@
 #ifndef COMPONENT_MANAGER_H
 #define COMPONENT_MANAGER_H
 
-#include <unordered_map>
+#include <map>
 #include <utility>
 #include <typeinfo>
 #include "Components.h"
@@ -38,7 +38,7 @@ private:
 			m_container_allocator(ptr, m_size, "Component container")
 		{
 			assert(ptr && "Pointer is nullptr");
-			RINFO("Component container of {}", typeid(T).name());
+			//RINFO("Component container of {}", typeid(T).name());
 		}
 		template<class ...P>
 		IComponent* Emplace(P&&... params)
@@ -58,9 +58,9 @@ private:
 			else
 				component = new(place) T(std::forward<P>(params)...);
 			m_used += sizeof(T);
-			RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "Emplace",
-				"\nline: ", m_container_allocator.line.m_stats.ToString(),
-				"\nPool: ", m_container_allocator.pool.m_stats.ToString());
+			//RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "Emplace",
+			//	"\nline: ", m_container_allocator.line.m_stats.ToString(),
+			//	"\nPool: ", m_container_allocator.pool.m_stats.ToString());
 			return component;
 		}
 		virtual void erase(IComponent* component) final
@@ -68,9 +68,9 @@ private:
 			std::lock_guard<std::mutex> lock(m_compContainer_mutex);
 			m_container_allocator.dealloc((T*)component);
 			m_used -= sizeof(T);
-			RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "Erase", 
-				"\nline: ", m_container_allocator.line.m_stats.ToString(), 
-				"\nPool: ", m_container_allocator.pool.m_stats.ToString());
+			//RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "Erase", 
+			//	"\nline: ", m_container_allocator.line.m_stats.ToString(), 
+			//	"\nPool: ", m_container_allocator.pool.m_stats.ToString());
 		}
 	private:
 		void* grow()
@@ -82,9 +82,13 @@ private:
 
 public:
 	static std::mutex s_compManager_mutex;
+
+	static event<entityID, ComponentTypeID, IComponent*> OnComponentAdded;
+	static event<entityID, ComponentTypeID> OnComponentRemoved;
+
 private:
 	static memory::StackAllocator m_compManager_allocator;
-	static std::unordered_multimap<ComponentTypeID, IComponentContainer*> m_component_containers;
+	static std::multimap<ComponentTypeID, IComponentContainer*> m_component_containers;
 
 public:
 	static void DeleteEntity(const std::map<ComponentTypeID, IComponent*>& comps)
@@ -105,6 +109,7 @@ public:
 	static IComponent* AddComponent(P&&... params)
 	{
 		IComponent* component = GetComponentContainer<T>()->Emplace(std::forward<P>(params)...);
+		
 		return component;
 	}
 	template<class T>
@@ -145,9 +150,12 @@ private:
 memory::StackAllocator ComponentManager::m_compManager_allocator{
 	memory::MemoryManager::NewMemoryUser(typeid(ComponentManager).name(), MAX_CONTAINER_COUNT * MEBIBYTE), MAX_CONTAINER_COUNT * MEBIBYTE };
 
-std::unordered_multimap<ComponentTypeID, ComponentManager::IComponentContainer*> ComponentManager::m_component_containers;
+std::multimap<ComponentTypeID, ComponentManager::IComponentContainer*> ComponentManager::m_component_containers;
 
 std::mutex ComponentManager::s_compManager_mutex;
+
+event<entityID, ComponentTypeID, IComponent*>	ComponentManager::OnComponentAdded;
+event<entityID, ComponentTypeID>				ComponentManager::OnComponentRemoved;
 
 }//namespace RECS
 

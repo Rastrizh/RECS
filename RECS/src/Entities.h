@@ -18,12 +18,6 @@ public:
 	bool isUpdateble;
 	static entityID IDCouneter;
 
-	event<entityID, ComponentTypeID, IComponent*> OnComponentAdded;
-	event<entityID, ComponentTypeID> OnComponentRemoved;
-
-	event<Entity*> OnEntityCreated;
-	event<entityID> OnEntityDestroyed;
-
 private:
 	static std::set<entityID> freeIDs;
 public:
@@ -31,14 +25,15 @@ public:
 	{
 		if (freeIDs.empty())
 		{
-			EntityID = ++IDCouneter;
+			EntityID = IDCouneter;
+			IDCouneter++;
 		}
 		else
 		{
 			EntityID = *freeIDs.begin();
 			freeIDs.erase(freeIDs.begin());
 		}
-		isUpdateble = false;
+		isUpdateble = true;
 	}
 	Entity(const Entity& e)
 		: EntityID(e.EntityID), isUpdateble(e.isUpdateble)
@@ -46,26 +41,26 @@ public:
 	}
 	~Entity()
 	{
-		//freeIDs.insert(this->EntityID);
+		freeIDs.insert(this->EntityID);
 	}
 
 	template<typename T, class ... P>
 	void AddComponent(P&&... params)
 	{
 		IComponent* new_component = ComponentManager::AddComponent<T>(std::forward<P>(params)...);
-		OnComponentAdded(this->EntityID, T::GetTypeID(), new_component);
+		ComponentManager::OnComponentAdded(this->EntityID, T::GetTypeID(), new_component);
 	}
 	template<typename T>
 	void DeleteComponent()
 	{
 		ComponentManager::DeleteComponent<T>(T::GetTypeID(), GetComponent<T>(EntityID));
-		OnComponentRemoved(this->EntityID, T::GetTypeID());
+		ComponentManager::OnComponentRemoved(this->EntityID, T::GetTypeID());
 	}
 	template<class T>
 	T* GetComponent()
 	{
-		for(auto & f : OnComponentAdded.m_Futures)
-			f.wait();
+		/*for(auto & f : ComponentManager::OnComponentAdded().m_Futures)
+			f.wait();*/
 		return Engine::getComponent<T>(EntityID);
 	}
 	template<class T>

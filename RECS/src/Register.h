@@ -26,33 +26,36 @@ public:
 	static std::map<entityID, std::map<ComponentTypeID, IComponent*>> s_entity_components;
 	static std::map<ComponentTypeID, std::set<entityID>> s_entity_table;
 
-public:
-	static Entity* CreateEntity()
-	{
-		auto e = EntityManager::CreateEntity();
+	static event<entityID> OnEntityCreated;
+	static event<entityID> OnEntityDestroyed;
 
-		e->OnEntityCreated += [](Entity* e) {
+public:
+	static void Initialize()
+	{
+		Engine::OnEntityCreated += [](entityID eid) {
 
 		};
-		e->OnEntityDestroyed += [](entityID eid) {
+		Engine::OnEntityDestroyed += [](entityID eid) {
 			ComponentManager::DeleteEntity(s_entity_components[eid]);
 			EntityManager::DeleteEntity(eid);
 		};
 
-		e->OnComponentAdded += [](entityID eid, ComponentTypeID cid, IComponent* component) {
+		ComponentManager::OnComponentAdded += [](entityID eid, ComponentTypeID cid, IComponent* component) {
 			Engine::ComponentAdded(eid, cid, component);
 		};
-		e->OnComponentRemoved += [](entityID eid, ComponentTypeID cid) {
+		ComponentManager::OnComponentRemoved += [](entityID eid, ComponentTypeID cid) {
 			Engine::ComponentRemoved(eid, cid);
 		};
-
-		return e;
+	}
+	static Entity* CreateEntity()
+	{
+		return EntityManager::CreateEntity();
 	}
 
 	static void KillEntity(entityID eid)
 	{
 		std::lock_guard<std::mutex> Lock(s_Engine_lock);
-		EntityManager::getEntityPtr(eid)->OnEntityDestroyed(eid);
+		OnEntityDestroyed(eid);
 		s_entity_components.erase(eid);
 		for (auto& s : s_entity_table)
 			s.second.erase(eid);
@@ -114,5 +117,9 @@ std::mutex Engine::s_Engine_lock;
 std::map<entityID, std::map<ComponentTypeID, IComponent*>> Engine::s_entity_components;
 
 std::map<ComponentTypeID, std::set<entityID>> Engine::s_entity_table;
+
+event<entityID> Engine::OnEntityCreated;
+event<entityID> Engine::OnEntityDestroyed;
+
 }
 #endif // !REGISTER_H
