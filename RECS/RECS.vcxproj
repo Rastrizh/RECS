@@ -191,6 +191,7 @@
     <ClInclude Include="src\EntityManager.h" />
     <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="include\RECS.h" />
+    <ClInclude Include="src\IDProvider.h" />
     <ClInclude Include="src\memory\Allocator.h" />
     <ClInclude Include="src\memory\ChunkAllocator.h" />
     <ClInclude Include="src\memory\LinearAllocator.h" />

@@ -23,17 +23,17 @@ public:
 		pool{ line.allocate(sizeof(T) * CHUNK_SIZE, alignof(T)), sizeof(T), CHUNK_SIZE }
 	{
 	}
-	ChunkAllocator(size_t size, const char* _owner)
+	ChunkAllocator(size_t&& size, const char* _owner)
 		:
 		owner{ _owner },
-		line{ size + alignof(T) },
+		line{ std::move(size) },
 		pool{ line.allocate(sizeof(T) * CHUNK_SIZE, alignof(T)), sizeof(T), CHUNK_SIZE }
 	{
 	}
-	ChunkAllocator(void* start_ptr, size_t size, const char* _owner)
+	ChunkAllocator(void* start_ptr, size_t&& size, const char* _owner)
 		:
 		owner{ _owner },
-		line{ start_ptr, size + alignof(T) },
+		line{ start_ptr, std::move(size) },
 		pool{ line.allocate(sizeof(T) * CHUNK_SIZE, alignof(T)), sizeof(T), CHUNK_SIZE }
 	{
 	}
@@ -64,7 +64,10 @@ public:
 	{ 
 		void* ret = pool[index];
 		assert(ret && "Incorrect index, no data in that location"); 
-		return (T*)ret; }
+		return (T*)ret; 
+	}
+
+
 
 }; // class ChunkAllocator 
 
