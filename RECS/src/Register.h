@@ -71,7 +71,7 @@ public:
 	template<class ... Args>
 	static std::set<entityID> getGroup()
 	{
-		std::lock_guard<std::mutex> Lock(s_Engine_lock);
+		//std::lock_guard<std::mutex> Lock(s_Engine_lock);
 		std::vector<ComponentTypeID> v{ (Args::GetTypeID())... };
 		auto temp = s_entity_table[v[0]];
 		if (v.size() < 2)
@@ -86,12 +86,12 @@ public:
 		return target;
 	}
 
-	template<class T>
-	static T* getComponent(const entityID& eid)
-	{
-		std::lock_guard<std::mutex> Lock(s_Engine_lock);
-		return (T*)s_entity_components[eid][T::GetTypeID()];
-	}
+	//template<class T>
+	//static T* getComponent(const entityID& eid)
+	//{
+	//	//std::lock_guard<std::mutex> Lock(s_Engine_lock);
+	//	return (T*)s_entity_components[eid][T::GetTypeID()];
+	//}
 	template<class T>
 	static bool hasComponent(const entityID& eid)
 	{
@@ -100,7 +100,7 @@ public:
 	}
 	static void ComponentAdded(const entityID& eid, const ComponentTypeID& componentType, IComponent* component)
 	{
-		std::lock_guard<std::mutex> Lock(s_Engine_lock);
+		//std::lock_guard<std::mutex> Lock(s_Engine_lock);
 		s_entity_components[eid][componentType] = component;
 		s_entity_table[componentType].insert(eid);
 	}

@@ -15,7 +15,7 @@ private:
 	std::list<delegateType> m_delegateList;
 	mutable std::mutex m_delegateLocker;
 public:
-	std::list<std::future<void>> m_Futures;
+	std::vector<std::future<void>> m_Futures;
 
 public:
 	void Connect(const delegateType& _delegate)
@@ -38,15 +38,12 @@ public:
 
 	void call(TArgs... params) const
 	{
-		std::list<delegateType> delegatesCopy = get_delegates_copy();
-
-		call_impl(delegatesCopy, std::forward<TArgs>(params)...);
+		call_impl(std::forward<TArgs>(params)...);
 	}
 
-	/*std::future<void>*/void call_asunc(TArgs...params) const
+	std::future<void> call_asunc(TArgs...params) const
 	{
-		std::async(std::launch::async,
-			&event::call, this, std::forward<TArgs>(params)...);
+		return std::async(std::launch::async, &event::call, this, std::forward<TArgs>(params)...);
 	}
 
 	event& operator +=(const delegateType& _delegate)
@@ -63,7 +60,7 @@ public:
 
 	inline void operator()(TArgs...args)
 	{
-		/*m_Futures.push_back(*/call_asunc(std::forward<TArgs>(args)...);
+		m_Futures.push_back(call_asunc(std::forward<TArgs>(args)...));
 	}
 
 	bool operator==(const delegateType& rhs) const
@@ -72,7 +69,7 @@ public:
 	}
 
 private:
-	void call_impl(const std::list<delegateType>& delegatesCopy, TArgs...params) const
+	void call_impl(TArgs...params) const
 	{
 		for (const auto& _delegate : m_delegateList)
 		{

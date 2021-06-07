@@ -8,7 +8,7 @@
 
 namespace RECS { namespace memory {
 
-#define GLOBAL_MEMORY_SIZE 134217728
+#define GLOBAL_MEMORY_SIZE 1342177280
 
 class MemoryManager
 {
@@ -24,7 +24,7 @@ private:
 	static StackAllocator s_global_memory_allocator;
 	static std::vector<MemoryUser> memory_users;
 public:
-	static void* NewMemoryUser(const char* name, size_t mem_size)
+	static void* NewMemoryUser(const char* name, size_t&& mem_size)
 	{
 		//assert((memory_users[0].name != name || memory_users[1].name != name) && "Trying to add existing memory user");
 		assert(mem_size <= s_global_memory_allocator.m_stats.total_size && "Not enough memory");
