@@ -27,7 +27,7 @@ public:
 	static void* NewMemoryUser(const char* name, size_t&& mem_size)
 	{
 		//assert((memory_users[0].name != name || memory_users[1].name != name) && "Trying to add existing memory user");
-		assert(mem_size <= s_global_memory_allocator.m_stats.total_size && "Not enough memory");
+		assert(mem_size <= s_global_memory_allocator.TotalSize() && "Not enough memory");
 
 		memory_users.emplace_back(name, mem_size);
 

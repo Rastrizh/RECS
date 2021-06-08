@@ -11,7 +11,7 @@ namespace RECS { namespace memory {
 template<typename T>
 class ChunkAllocator
 {
-public:
+private:
 	const char* owner;
 	LinearAllocator line;
 	PoolAllocator pool;
@@ -52,13 +52,12 @@ public:
 
 			PoolAllocator new_pool(new_pool_start, sizeof(T), CHUNK_SIZE);
 			pool.setHead(new_pool.getStartPtr());
-			pool.m_stats += new_pool.m_stats;
+			pool.setStats(new_pool.getStats());
 			ret = pool.allocate(size, alignof(T));
 		}
 		return ret;
 	}
 	void dealloc(void* ptr) { ((T*)ptr)->~T(); pool.free(ptr); }
-	size_t getBlockSize() { return pool.getBlockSize(); }
 
 	T* operator[](size_t index) 
 	{ 
@@ -67,8 +66,13 @@ public:
 		return (T*)ret; 
 	}
 
+	const PoolAllocator& getPool() const { return pool; }
+	const LinearAllocator& getLine() const { return line; }
+	const char* getOwner() const { return owner; }
 
-
+	size_t getBlockSize() { return pool.getBlockSize(); }
+	const AllocatorStats& getLineStats() const { return line.getStats(); }
+	const AllocatorStats& getPoolStats() const { return pool.getStats(); }
 }; // class ChunkAllocator 
 
 }} // namespace RECS::memory
