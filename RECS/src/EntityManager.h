@@ -21,7 +21,7 @@ namespace RECS {
 		{
 			return s_entityManager_allocator[eid]->isUpdateble;
 		}
-		static void DeleteEntity(entityID eid)
+		static void DeleteEntity(const entityID& eid)
 		{
 			s_entityManager_allocator.dealloc(s_entityManager_allocator[eid]);
 		}

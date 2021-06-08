@@ -189,6 +189,7 @@
     <ClInclude Include="src\core\Timer.h" />
     <ClInclude Include="src\Entities.h" />
     <ClInclude Include="src\EntityManager.h" />
+    <ClInclude Include="src\Events\Delegate.h" />
     <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="include\RECS.h" />
     <ClInclude Include="src\IDProvider.h" />

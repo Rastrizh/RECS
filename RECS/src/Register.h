@@ -26,27 +26,20 @@ public:
 	static std::map<entityID, std::map<ComponentTypeID, IComponent*>> s_entity_components;
 	static std::map<ComponentTypeID, std::set<entityID>> s_entity_table;
 
-	static event<entityID> OnEntityCreated;
-	static event<entityID> OnEntityDestroyed;
+	static event<const entityID&> OnEntityCreated;
+	static event<const entityID&> OnEntityDestroyed;
 
 public:
 	static void Initialize()
 	{
-		Engine::OnEntityCreated += [](entityID eid) {
+		Engine::OnEntityDestroyed += Engine::DeleteEntity;
+		Engine::OnEntityDestroyed += EntityManager::DeleteEntity;
 
-		};
-		Engine::OnEntityDestroyed += [](entityID eid) {
-			ComponentManager::DeleteEntity(s_entity_components[eid]);
-			EntityManager::DeleteEntity(eid);
-		};
+		ComponentManager::OnComponentAdded += Engine::ComponentAdded;
 
-		ComponentManager::OnComponentAdded += [](entityID eid, ComponentTypeID cid, IComponent* component) {
-			Engine::ComponentAdded(eid, cid, component);
-		};
-		ComponentManager::OnComponentRemoved += [](entityID eid, ComponentTypeID cid) {
-			Engine::ComponentRemoved(eid, cid);
-		};
+		ComponentManager::OnComponentRemoved += Engine::ComponentRemoved;
 	}
+
 	static Entity* CreateEntity()
 	{
 		return EntityManager::CreateEntity();
@@ -67,6 +60,17 @@ public:
 			KillEntity(e.first);
 		}
 	}
+
+	static void DeleteEntity(const entityID& eid)
+	{
+		ComponentManager::DeleteEntity(s_entity_components[eid]);
+	}
+
+	//template<class ...Types>
+	//static void each(std::function<void(Types...)> view)
+	//{
+	//	for(size_t i = 0; i < )
+	//}
 
 	template<class ... Args>
 	static std::set<entityID> getGroup()
@@ -100,15 +104,15 @@ public:
 	}
 	static void ComponentAdded(const entityID& eid, const ComponentTypeID& componentType, IComponent* component)
 	{
-		//std::lock_guard<std::mutex> Lock(s_Engine_lock);
-		s_entity_components[eid][componentType] = component;
-		s_entity_table[componentType].insert(eid);
+		std::lock_guard<std::mutex> Lock(s_Engine_lock);
+		//s_entity_components[eid][componentType] = component;
+		//s_entity_table[componentType].insert(eid);
 	}
 	static void ComponentRemoved(const entityID& eid, const ComponentTypeID& componentType)
 	{
 		std::lock_guard<std::mutex> Lock(s_Engine_lock);
-		s_entity_table.erase(componentType);
-		s_entity_components[eid].erase(componentType);
+		//s_entity_table.erase(componentType);
+		//s_entity_components[eid].erase(componentType);
 	}
 };
 
@@ -118,8 +122,8 @@ std::map<entityID, std::map<ComponentTypeID, IComponent*>> Engine::s_entity_comp
 
 std::map<ComponentTypeID, std::set<entityID>> Engine::s_entity_table;
 
-event<entityID> Engine::OnEntityCreated;
-event<entityID> Engine::OnEntityDestroyed;
+event<const entityID&> Engine::OnEntityCreated;
+event<const entityID&> Engine::OnEntityDestroyed;
 
 }
 #endif // !REGISTER_H

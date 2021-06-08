@@ -1,6 +1,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
+#include "Delegate.h"
 #include <list>
 #include <functional>
 #include <utility>
@@ -11,7 +12,7 @@ template<class... TArgs>
 class event
 {
 private:
-	using delegateType = std::function<void(TArgs...)>;
+	using delegateType = delegate<TArgs...>;
 	std::list<delegateType> m_delegateList;
 	mutable std::mutex m_delegateLocker;
 public:
@@ -46,15 +47,15 @@ public:
 		return std::async(std::launch::async, &event::call, this, std::forward<TArgs>(params)...);
 	}
 
-	event& operator +=(const delegateType& _delegate)
+	event& operator +=(void(*func)(TArgs...))
 	{
-		Connect(_delegate);
+		Connect(delegateType(func));
 		return *this;
 	}
 	
-	event& operator -=(const delegateType& _delegate)
+	event& operator -=(void(*func)(TArgs...))
 	{
-		Remove(_delegate);
+		Remove(delegateType(func));
 		return *this;
 	}
 
@@ -65,7 +66,7 @@ public:
 
 	bool operator==(const delegateType& rhs) const
 	{
-		return Hash() == rhs.Hash();
+		return delegateType == rhs.delegateType;
 	}
 
 private:
@@ -82,11 +83,6 @@ private:
 		std::lock_guard<std::mutex> lock(m_delegateLocker);
 
 		return m_delegateList;
-	}
-
-	size_t Hash(const delegateType& func)
-	{
-		return func.target_type().hash_code();
 	}
 };
 }

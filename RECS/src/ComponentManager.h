@@ -71,8 +71,8 @@ private:
 public:
 	static std::mutex s_compManager_mutex;
 
-	static event<entityID, ComponentTypeID, IComponent*> OnComponentAdded;
-	static event<entityID, ComponentTypeID> OnComponentRemoved;
+	static event<const entityID&, const ComponentTypeID&, IComponent*> OnComponentAdded;
+	static event<const entityID&, const ComponentTypeID&> OnComponentRemoved;
 
 private:
 	static memory::StackAllocator m_compManager_allocator;
@@ -140,8 +140,8 @@ std::map<ComponentTypeID, ComponentManager::IComponentContainer*> ComponentManag
 
 std::mutex ComponentManager::s_compManager_mutex;
 
-event<entityID, ComponentTypeID, IComponent*>	ComponentManager::OnComponentAdded;
-event<entityID, ComponentTypeID>				ComponentManager::OnComponentRemoved;
+event<const entityID&, const ComponentTypeID&, IComponent*>	ComponentManager::OnComponentAdded;
+event<const entityID&, const ComponentTypeID&>				ComponentManager::OnComponentRemoved;
 
 }//namespace RECS
 
