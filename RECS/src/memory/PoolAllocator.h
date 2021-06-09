@@ -42,7 +42,7 @@ virtual ~PoolAllocator() override
 	clear();
 }
 
-void* allocate(size_t size, u8 alignment) override
+void* allocate(const size_t& size, u8 alignment) override
 {
 	if (size + m_stats.current_usage > m_stats.total_size)
 		return nullptr;

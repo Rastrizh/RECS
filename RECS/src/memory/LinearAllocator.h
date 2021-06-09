@@ -32,7 +32,7 @@ public:
 		m_curr_offset = 0;
 	}
 
-	virtual void* allocate(size_t size, u8 alignment) override
+	virtual void* allocate(const size_t& size, u8 alignment) override
 	{
 		if (m_curr_offset + size > m_stats.total_size)
 			return nullptr;
@@ -49,7 +49,7 @@ public:
 		m_curr_offset = 0;
 		resetStats();
 	}
-	void* getStartPtr() { return m_start_ptr; }
+	void* getStartPtr() const { return m_start_ptr; }
 };
 }} // namespace RECS::memory
 

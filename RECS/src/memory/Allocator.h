@@ -46,7 +46,7 @@ public:
 	Allocator(size_t&& size) : m_stats{ size, 0, 0 } {}
 	virtual ~Allocator() { m_stats = { 0,0,0 }; }
 
-	virtual void* allocate(size_t size, u8 alignment) = 0;
+	virtual void* allocate(const size_t& size, u8 alignment) = 0;
 	virtual void free(void* ptr) = 0;
 	virtual void clear() = 0;
 

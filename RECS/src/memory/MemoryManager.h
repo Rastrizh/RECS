@@ -8,7 +8,7 @@
 
 namespace RECS { namespace memory {
 
-#define GLOBAL_MEMORY_SIZE 1342177280
+#define GLOBAL_MEMORY_SIZE 268435456
 
 class MemoryManager
 {
