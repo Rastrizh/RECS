@@ -2,6 +2,7 @@
 #define ENTITY_MANAGER_H
 
 #include "Entities.h"
+#include "ComponentManager.h"
 #include "memory/ChunkAllocator.h"
 #include "memory/MemoryManager.h"
 
@@ -14,17 +15,17 @@ namespace RECS {
 		static Entity* CreateEntity()
 		{
 			//RINFO("Entity manager");
-			Entity* e = new(s_entityManager_allocator.alloc(sizeof(Entity))) Entity();
-			return e;
+			return  new(s_entityManager_allocator.alloc()) Entity();
 		}
-		static bool IsUpdateble(entityID eid)
+		static void DeleteEntity(Entity* e)
 		{
-			return s_entityManager_allocator[eid]->isUpdateble;
+			ComponentManager::DeleteEntityComponents(e);
+			s_entityManager_allocator.dealloc(e);
 		}
-		static void DeleteEntity(const entityID& eid)
-		{
-			s_entityManager_allocator.dealloc(s_entityManager_allocator[eid]);
-		}
+		static Entity*	GetEntity(entityID eid) { return s_entityManager_allocator[eid]; }
+		static bool		IsUpdateble(entityID eid) { return s_entityManager_allocator[eid]->isUpdateble; }
+		static size_t	EntityCount() { return s_entityManager_allocator.getElementCount(); }
+		static void		Clear() { s_entityManager_allocator.clear(); }
 	};
 
 	memory::ChunkAllocator<Entity> EntityManager::s_entityManager_allocator{
