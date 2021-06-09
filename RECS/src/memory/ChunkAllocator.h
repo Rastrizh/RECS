@@ -15,6 +15,7 @@ private:
 	const char* owner;
 	LinearAllocator line;
 	PoolAllocator pool;
+	size_t element_count = 0;
 public:
 	ChunkAllocator(const char* _owner)
 		:
@@ -37,9 +38,9 @@ public:
 		pool{ line.allocate(sizeof(T) * CHUNK_SIZE, alignof(T)), sizeof(T), CHUNK_SIZE }
 	{
 	}
-	void* alloc(size_t size)
+	void* alloc()
 	{
-		void* ret = pool.allocate(size, alignof(T));
+		void* ret = pool.allocate(pool.getBlockSize(), alignof(T));
 		if (ret == nullptr)
 		{
 			//RINFO("Chunk allocator of {}", owner);
@@ -53,24 +54,28 @@ public:
 			PoolAllocator new_pool(new_pool_start, sizeof(T), CHUNK_SIZE);
 			pool.setHead(new_pool.getStartPtr());
 			pool.setStats(new_pool.getStats());
-			ret = pool.allocate(size, alignof(T));
+			ret = pool.allocate(pool.getBlockSize(), alignof(T));
 		}
+		element_count++;
 		return ret;
 	}
-	void dealloc(void* ptr) { ((T*)ptr)->~T(); pool.free(ptr); }
+	void dealloc(void* ptr) { ((T*)ptr)->~T(); pool.free(ptr); --element_count; }
 
 	T* operator[](size_t index) 
 	{ 
-		void* ret = pool[index];
-		assert(ret && "Incorrect index, no data in that location"); 
+		assert(index <= line.TotalSize() / pool.getBlockSize() && "Incorrect index, no data in that location"); 
+		void* ret = (void*)((uintptr_t)line.getStartPtr() + pool.getBlockSize() * index);
 		return (T*)ret; 
 	}
+
+	void clear() { line.clear(); }
 
 	const PoolAllocator& getPool() const { return pool; }
 	const LinearAllocator& getLine() const { return line; }
 	const char* getOwner() const { return owner; }
 
-	size_t getBlockSize() { return pool.getBlockSize(); }
+	const size_t& getBlockSize() const { return pool.getBlockSize(); }
+	const size_t& getElementCount() const { return element_count; }
 	const AllocatorStats& getLineStats() const { return line.getStats(); }
 	const AllocatorStats& getPoolStats() const { return pool.getStats(); }
 }; // class ChunkAllocator 
