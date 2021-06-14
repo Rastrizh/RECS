@@ -48,7 +48,5 @@ namespace RECS {
 	using componentID = u32;
 	using IDType = u32;
 	using ComponentTypeID = size_t;
-
-#define MAX_ENTITY_COUNT 1000000
 }
 #endif // !RECSTYPES_H
