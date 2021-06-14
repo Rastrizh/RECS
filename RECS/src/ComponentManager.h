@@ -16,10 +16,12 @@
 #define MAX_CONTAINER_COUNT 64
 
 namespace RECS{
+
 class Entity;
+
 class ComponentManager
 {
-private:
+public:
 	class IComponentContainer 
 	{
 	public:
@@ -31,8 +33,8 @@ private:
 	{
 	private:
 		std::mutex m_compContainer_mutex;
-		size_t m_size = sizeof(T) * MAX_ENTITY_COUNT;
-		size_t m_used = 0;
+		size_t m_capacity = sizeof(T) * MAX_ENTITY_COUNT;
+		size_t m_size = 0;
 		memory::ChunkAllocator<T> m_container_allocator;
 
 	public:
@@ -44,18 +46,21 @@ private:
 			//RINFO("Component container of {}", typeid(T).name());
 		}
 		template<class ...P>
-		IComponent* Emplace(P&&... params)
+		IComponent* emplace(P&&... params)
 		{
 			std::lock_guard<std::mutex> lock(m_compContainer_mutex);
 
 			void* place = m_container_allocator.alloc();
 			IComponent* component = nullptr;
+
 			if constexpr (sizeof...(P) > 0)
 				component = new(place) T{ {}, std::forward<P>(params)... };
 			else
 				component = new(place) T(std::forward<P>(params)...);
-			m_used += sizeof(T);
-			//RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "Emplace",
+
+			m_size++;
+
+			//RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "emplace",
 			//	"\nline: ", m_container_allocator.line.m_stats.ToString(),
 			//	"\nPool: ", m_container_allocator.pool.m_stats.ToString());
 			return component;
@@ -64,12 +69,17 @@ private:
 		{
 			std::lock_guard<std::mutex> lock(m_compContainer_mutex);
 			m_container_allocator.dealloc(m_container_allocator[cid]);
-			m_used -= sizeof(T);
+
+			m_size--;
+
 			//RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "Erase", 
 			//	"\nline: ", m_container_allocator.line.m_stats.ToString(), 
 			//	"\nPool: ", m_container_allocator.pool.m_stats.ToString());
 		}
-		T operator[](const entityID& eid) { return m_container_allocator[eid]; }
+		size_t size() { return m_size; }
+		size_t capacity() { return m_capacity; }
+		T* get(const componentID& cid) { return m_container_allocator[cid]; }
+		T* operator[](const componentID& cid) { return m_container_allocator[cid]; }
 	};
 
 public:
@@ -88,7 +98,7 @@ public:
 	template<class T, class ...P>
 	static IComponent* AddComponent(P&&... params)
 	{
-		IComponent* component = GetComponentContainer<T>()->Emplace(std::forward<P>(params)...);
+		IComponent* component = GetComponentContainer<T>()->emplace(std::forward<P>(params)...);
 		
 		return component;
 	}
@@ -106,12 +116,12 @@ public:
 	}
 	static void Clear() { m_compManager_allocator.clear(); }
 
-	//template<class T>
-	//static T GetComponent(const entityID& eid)
-	//{
-	//	ComponentContainer<T>* container = dynamic_cast<ComponentContainer<T>*>(m_component_containers[T::GetTypeID()]);
-	//	return container[eid];
-	//}
+	template<class T>
+	static T* GetComponent(const componentID& cid)
+	{
+		ComponentContainer<T>* container = dynamic_cast<ComponentContainer<T>*>(m_component_containers[T::GetTypeID()]);
+		return container->get(cid);
+	}
 
 private:
 	template<class T>
@@ -126,7 +136,7 @@ private:
 	template<class T>
 	static ComponentContainer<T>* CreateComponentContainer()
 	{
-		std::lock_guard<std::mutex> lock(s_compManager_mutex);
+		//std::lock_guard<std::mutex> lock(s_compManager_mutex);
 		auto ret = new ComponentContainer<T>(m_compManager_allocator.allocate(sizeof(T) * MAX_ENTITY_COUNT, alignof(T)));
 		m_component_containers[T::GetTypeID()] = (IComponentContainer*)ret;
 		return ret;
