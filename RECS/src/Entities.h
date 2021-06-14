@@ -17,51 +17,62 @@ private:
 	using componentsTable = std::map<ComponentTypeID, componentID>;
 	componentsTable m_components;
 public:
-	entityID EntityID;
+	entityID ID;
 	bool isUpdateble = true;
+	bool isDrawable = true;
 
 public:
 	Entity()
-		: EntityID(IDProvider<Entity>::Get())
+		: ID(IDProvider<Entity>::Get())
 	{
 	}
 	Entity(const Entity& e)
-		: EntityID(e.EntityID), isUpdateble(e.isUpdateble)
+		: ID(e.ID), isUpdateble(e.isUpdateble)
 	{
 	}
 	~Entity()
 	{
-		IDProvider<Entity>::Remove(this->EntityID);
+		IDProvider<Entity>::Remove(this->ID);
 	}
 
 	template<typename T, class ... P>
 	void AddComponent(P&&... params)
 	{
 		IComponent* new_component = ComponentManager::AddComponent<T>(std::forward<P>(params)...);
-		((Component<T>*)new_component)->ownerID = this->EntityID;
+		((Component<T>*)new_component)->ownerID = this->ID;
 		((Component<T>*)new_component)->ID = IDProvider<T>::Get();
 		m_components[T::GetTypeID()] = ((Component<T>*)new_component)->ID;
-		//ComponentManager::OnComponentAdded(this->EntityID, T::GetTypeID(), new_component);
+		//ComponentManager::OnComponentAdded(this->ID, T::GetTypeID(), new_component);
 	}
 	template<typename T>
 	void DeleteComponent()
 	{
 		ComponentManager::DeleteComponent<T>(T::GetTypeID(), m_components[T::GetTypeID()]);
 		m_components.erase(T::GetTypeID());
-		//ComponentManager::OnComponentRemoved(this->EntityID, T::GetTypeID());
+		//ComponentManager::OnComponentRemoved(this->ID, T::GetTypeID());
 	}
 	template<class T>
-	T* GetComponent()
+	ComponentHandle<T> GetComponent()
 	{
-		for(auto & f : ComponentManager::OnComponentAdded().m_Futures)
-			f.wait();
-		return ComponentManager::getComponent<T>(m_components[T::GetTypeID()]);
+		//for(auto & f : ComponentManager::OnComponentAdded().m_Futures)
+		//	f.wait();
+		return ComponentHandle<T>(ComponentManager::GetComponent<T>(getComponentID<T>()));
 	}
 	template<class T>
-	bool HasComponent()
+	bool HasComponent() const
 	{
-		return m_components[T::GetTypeID()];
+		if (m_components.empty())
+			return false;
+		return m_components.find(T::GetTypeID()) != m_components.end();
 	}
+	template<class T, class V, class ...Types>
+	bool HasComponent() const
+	{
+		return HasComponent<T>() && HasComponent<V, Types...>();
+	}
+
+	template<typename T>
+	const componentID& getComponentID() { return m_components[T::GetTypeID()]; }
 	const componentsTable& getComponentsTable() const { return m_components; }
 };
 }
