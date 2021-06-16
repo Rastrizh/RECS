@@ -179,7 +179,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\core\Log.cpp" />
-    <ClCompile Include="src\core\Timer.cpp" />
     <ClCompile Include="src\memory\Allocator.cpp" />
   </ItemGroup>
   <ItemGroup>

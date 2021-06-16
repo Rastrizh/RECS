@@ -16,7 +16,6 @@
 #include "memory/MemoryManager.h"
 #include "ComponentManager.h"
 #include "EntityManager.h"
-#include "View.h"
 
 namespace RECS {
 
