@@ -42,7 +42,7 @@ virtual ~PoolAllocator() override
 	clear();
 }
 
-void* allocate(size_t size, u8 alignment) override
+void* allocate(const size_t& size, u8 alignment) override
 {
 	if (size + m_stats.current_usage > m_stats.total_size)
 		return nullptr;
@@ -74,10 +74,9 @@ void clear() override
 	resetStats();
 }
 
-size_t getBlockSize() { return m_element_size; }
-void* getStartPtr() { return m_start_ptr; }
-void* getHead() { return head; }
-
+const size_t& getBlockSize() const { return m_element_size; }
+void* getStartPtr() const { return m_start_ptr; }
+void* getHead() const { return head; }
 void setHead(void* ptr) { head = ptr; }
 
 void* operator[](size_t index)

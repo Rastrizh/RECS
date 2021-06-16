@@ -2,7 +2,7 @@
 #define ID_PROVIDER_H
 
 #include "RECSTypes.h"
-#include <set>
+#include <list>
 
 namespace RECS{
 template<class T>
@@ -19,24 +19,25 @@ public:
 		}
 		else
 		{
-			IDType ID = *freeID.begin();
-			freeID.erase(freeID.begin());
+			IDType ID = freeID.back();
+			freeID.pop_back();
 			return ID;
 		}
 	}
 	static void Remove(const IDType& id)
 	{
-		freeID.insert(id);
+		freeID.push_back(id);
 	}
-private:
+	static bool isDeletedID(const IDType& id) { return std::find(freeID.begin(), freeID.end(), id) != freeID.end() ? true : false; }
+public:
 	static IDType counter;
-	static std::set<IDType> freeID;
+	static std::list<IDType> freeID;
 };
 
 template<class T>
-IDType RECS::IDProvider<T>::counter;
+IDType typename RECS::IDProvider<T>::counter;
 
 template<class T>
-std::set<RECS::IDType> RECS::IDProvider<T>::freeID;
+std::list<RECS::IDType> typename RECS::IDProvider<T>::freeID;
 }
 #endif // !ID_PROVIDER_H

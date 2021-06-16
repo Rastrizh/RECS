@@ -34,7 +34,7 @@ public:
 	{
 
 	}
-	virtual void* allocate(size_t size, u8 align) override
+	virtual void* allocate(const size_t& size, u8 align) override
 	{
 		if (m_curr_offset + size >= m_stats.total_size)
 			return nullptr;

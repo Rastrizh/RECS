@@ -1,6 +1,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
+#include "Delegate.h"
 #include <list>
 #include <functional>
 #include <utility>
@@ -11,11 +12,11 @@ template<class... TArgs>
 class event
 {
 private:
-	using delegateType = std::function<void(TArgs...)>;
+	using delegateType = delegate<TArgs...>;
 	std::list<delegateType> m_delegateList;
 	mutable std::mutex m_delegateLocker;
 public:
-	std::vector<std::future<void>> m_Futures;
+	std::list<std::future<void>> m_Futures;
 
 public:
 	void Connect(const delegateType& _delegate)
@@ -41,31 +42,32 @@ public:
 		call_impl(std::forward<TArgs>(params)...);
 	}
 
-	std::future<void> call_asunc(TArgs...params) const
+	void call_asunc(TArgs...params) const
 	{
-		return std::async(std::launch::async, &event::call, this, std::forward<TArgs>(params)...);
+		auto f = std::move(std::async(std::launch::async, &event::call, this, std::forward<TArgs>(params)...));
+		f.get();
 	}
 
-	event& operator +=(const delegateType& _delegate)
+	event& operator +=(void(*func)(TArgs...))
 	{
-		Connect(_delegate);
+		Connect(delegateType(func));
 		return *this;
 	}
 	
-	event& operator -=(const delegateType& _delegate)
+	event& operator -=(void(*func)(TArgs...))
 	{
-		Remove(_delegate);
+		Remove(delegateType(func));
 		return *this;
 	}
 
 	inline void operator()(TArgs...args)
 	{
-		m_Futures.push_back(call_asunc(std::forward<TArgs>(args)...));
+		call_asunc(std::forward<TArgs>(args)...);
 	}
 
 	bool operator==(const delegateType& rhs) const
 	{
-		return Hash() == rhs.Hash();
+		return delegateType == rhs.delegateType;
 	}
 
 private:
@@ -75,18 +77,6 @@ private:
 		{
 			_delegate(std::forward<TArgs>(params)...);
 		}
-	}
-
-	std::list<delegateType> get_delegates_copy() const
-	{
-		std::lock_guard<std::mutex> lock(m_delegateLocker);
-
-		return m_delegateList;
-	}
-
-	size_t Hash(const delegateType& func)
-	{
-		return func.target_type().hash_code();
 	}
 };
 }
