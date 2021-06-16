@@ -15,7 +15,6 @@ private:
 	const char* owner;
 	LinearAllocator line;
 	PoolAllocator pool;
-	size_t element_count = 0;
 public:
 	ChunkAllocator(const char* _owner)
 		:
@@ -56,10 +55,9 @@ public:
 			pool.setStats(new_pool.getStats());
 			ret = pool.allocate(pool.getBlockSize(), alignof(T));
 		}
-		element_count++;
 		return ret;
 	}
-	void dealloc(void* ptr) { ((T*)ptr)->~T(); pool.free(ptr); --element_count; }
+	void dealloc(void* ptr) { ((T*)ptr)->~T(); pool.free(ptr); }
 
 	T* operator[](size_t index) 
 	{ 
@@ -75,7 +73,6 @@ public:
 	const char* getOwner() const { return owner; }
 
 	const size_t& getBlockSize() const { return pool.getBlockSize(); }
-	const size_t& getElementCount() const { return element_count; }
 	const AllocatorStats& getLineStats() const { return line.getStats(); }
 	const AllocatorStats& getPoolStats() const { return pool.getStats(); }
 }; // class ChunkAllocator 

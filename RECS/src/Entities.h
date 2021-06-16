@@ -4,6 +4,8 @@
 #include "IDProvider.h"
 #include "Events/Event.h"
 
+#define MAX_ENTITY_COUNT 10000
+
 #include <map>
 
 namespace RECS {
@@ -18,16 +20,20 @@ private:
 	componentsTable m_components;
 public:
 	entityID ID;
-	bool isUpdateble = true;
-	bool isDrawable = true;
+	bool isUpdateble;
+	bool isDrawable;
 
 public:
 	Entity()
-		: ID(IDProvider<Entity>::Get())
+		: ID(IDProvider<Entity>::Get()),
+		isUpdateble(true),
+		isDrawable(true)
 	{
 	}
 	Entity(const Entity& e)
-		: ID(e.ID), isUpdateble(e.isUpdateble)
+		: ID(e.ID),
+		isUpdateble(e.isUpdateble),
+		isDrawable(true)
 	{
 	}
 	~Entity()
@@ -39,9 +45,9 @@ public:
 	void AddComponent(P&&... params)
 	{
 		IComponent* new_component = ComponentManager::AddComponent<T>(std::forward<P>(params)...);
-		((Component<T>*)new_component)->ownerID = this->ID;
-		((Component<T>*)new_component)->ID = IDProvider<T>::Get();
-		m_components[T::GetTypeID()] = ((Component<T>*)new_component)->ID;
+		((T*)new_component)->ownerID = this->ID;
+		((T*)new_component)->ID = IDProvider<T>::Get();
+		m_components[T::GetTypeID()] = ((T*)new_component)->ID;
 		//ComponentManager::OnComponentAdded(this->ID, T::GetTypeID(), new_component);
 	}
 	template<typename T>
@@ -52,7 +58,7 @@ public:
 		//ComponentManager::OnComponentRemoved(this->ID, T::GetTypeID());
 	}
 	template<class T>
-	ComponentHandle<T> GetComponent()
+	typename ComponentHandle<T> GetComponent()
 	{
 		//for(auto & f : ComponentManager::OnComponentAdded().m_Futures)
 		//	f.wait();

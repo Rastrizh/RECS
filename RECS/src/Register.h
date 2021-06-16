@@ -52,7 +52,6 @@ public:
 	{
 		//std::lock_guard<std::mutex> Lock(s_Engine_lock);
 
-		e->isUpdateble = false;
 		ComponentManager::DeleteEntityComponents(e);
 		EntityManager::DeleteEntity(e);
 		OnEntityDestroyed(e);

@@ -28,16 +28,16 @@ public:
 	{
 		freeID.push_back(id);
 	}
-	static bool has(const IDType& id) { return std::find(freeID.begin(), freeID.end(), id) != freeID.end() ? true : false; }
+	static bool isDeletedID(const IDType& id) { return std::find(freeID.begin(), freeID.end(), id) != freeID.end() ? true : false; }
 public:
 	static IDType counter;
 	static std::list<IDType> freeID;
 };
 
 template<class T>
-IDType RECS::IDProvider<T>::counter;
+IDType typename RECS::IDProvider<T>::counter;
 
 template<class T>
-std::list<RECS::IDType> RECS::IDProvider<T>::freeID;
+std::list<RECS::IDType> typename RECS::IDProvider<T>::freeID;
 }
 #endif // !ID_PROVIDER_H
