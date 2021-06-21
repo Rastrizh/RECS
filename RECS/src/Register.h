@@ -36,6 +36,8 @@ public:
 		return EntityManager::CreateEntity();
 	}
 
+	static size_t EntityCount() { return EntityManager::EntityCount(); }
+
 	static void KillEntity(Entity* e)
 	{
 		ComponentManager::DeleteEntityComponents(e);
@@ -60,6 +62,19 @@ public:
 			else
 				continue;
 		}
+	}
+	template<typename ...Types>
+	static std::vector<Entity*> getView()
+	{
+		std::vector<Entity*> view;
+		auto count = EntityManager::TotalEntities();
+		for (size_t i = 0; i < count; i++)
+		{
+			auto e = EntityManager::GetEntity(i);
+			if (e && e->isUpdateble && e->HasComponent<Types...>())
+				view.push_back(e);
+		}
+		return view;
 	}
 };
 

@@ -22,18 +22,21 @@ public:
 	entityID ID;
 	bool isUpdateble;
 	bool isDrawable;
+	bool isAlive;
 
 public:
 	Entity()
 		: ID(IDProvider<Entity>::Get()),
 		isUpdateble(true),
-		isDrawable(true)
+		isDrawable(true),
+		isAlive(true)
 	{
 	}
 	Entity(const Entity& e)
 		: ID(e.ID),
 		isUpdateble(e.isUpdateble),
-		isDrawable(true)
+		isDrawable(true),
+		isAlive(true)
 	{
 	}
 	~Entity()
