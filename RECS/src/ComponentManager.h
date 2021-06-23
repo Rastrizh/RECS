@@ -21,7 +21,7 @@ class Entity;
 
 class ComponentManager
 {
-public:
+protected:
 	class IComponentContainer 
 	{
 	public:
@@ -60,9 +60,6 @@ public:
 
 			m_size++;
 
-			//RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "emplace",
-			//	"\nline: ", m_container_allocator.line.m_stats.ToString(),
-			//	"\nPool: ", m_container_allocator.pool.m_stats.ToString());
 			return component;
 		}
 		virtual void erase(const componentID& cid) final
@@ -71,29 +68,26 @@ public:
 			m_container_allocator.dealloc(m_container_allocator[cid]);
 
 			m_size--;
-
-			//RINFO("\nComponent container of {} {} {} {} {} {}", typeid(T).name(), "Erase", 
-			//	"\nline: ", m_container_allocator.line.m_stats.ToString(), 
-			//	"\nPool: ", m_container_allocator.pool.m_stats.ToString());
 		}
+
+	public:
 		size_t size() { return m_size; }
 		size_t capacity() { return m_capacity; }
 		T* get(const componentID& cid) { return m_container_allocator[cid]; }
 		T* operator[](const componentID& cid) { return m_container_allocator[cid]; }
 	};
 
-public:
-	//static std::mutex s_compManager_mutex;
-
-	static event<const entityID&, const ComponentTypeID&, IComponent*> OnComponentAdded;
-	static event<const entityID&, const ComponentTypeID&> OnComponentRemoved;
-
 private:
 	static memory::StackAllocator m_compManager_allocator;
-public:
 	static std::map<ComponentTypeID, IComponentContainer*> m_component_containers;
 
 public:
+	static event<Entity*, const ComponentTypeID&, IComponent*> OnComponentAdded;
+	static event<Entity*, const ComponentTypeID&> OnComponentRemoved;
+
+public:
+	static void DeleteEntityComponents(Entity* e);
+	static void Clear();
 
 	template<class T, class ...P>
 	static IComponent* AddComponent(P&&... params)
@@ -107,15 +101,6 @@ public:
 	{
 		GetComponentContainer<T>()->erase(cid);
 	}
-	static void DeleteEntityComponents(Entity* e)
-	{
-		for (const auto &c : e->getComponentsTable())
-		{
-			m_component_containers[c.first]->erase(c.second);
-		}
-	}
-	static void Clear() { m_compManager_allocator.clear(); }
-
 	template<class T>
 	static T* GetComponent(const componentID& cid)
 	{
@@ -123,23 +108,7 @@ public:
 		return container->get(cid);
 	}
 
-	//template<class T>
-	//static T GetComponent(const entityID& eid)
-	//{
-	//	ComponentContainer<T>* container = dynamic_cast<ComponentContainer<T>*>(m_component_containers[T::GetTypeID()]);
-	//	return container[eid];
-	//}
-
 private:
-	template<class T>
-	static ComponentContainer<T>* GetComponentContainer()
-	{
-		ComponentContainer<T>* ret = dynamic_cast<ComponentContainer<T>*>(m_component_containers[T::GetTypeID()]);
-		if(!ret)
-			ret = CreateComponentContainer<T>();
-		return ret;
-	}
-
 	template<class T>
 	static ComponentContainer<T>* CreateComponentContainer()
 	{
@@ -148,17 +117,36 @@ private:
 		m_component_containers[T::GetTypeID()] = (IComponentContainer*)ret;
 		return ret;
 	}
+	template<class T>
+	static ComponentContainer<T>* GetComponentContainer()
+	{
+		ComponentContainer<T>* ret = dynamic_cast<ComponentContainer<T>*>(m_component_containers[T::GetTypeID()]);
+		if(!ret)
+			ret = CreateComponentContainer<T>();
+		return ret;
+	}
 }; // Class ComponentManager
+
+void ComponentManager::DeleteEntityComponents(Entity* e)
+{
+	for (const auto& c : e->getComponentsTable())
+	{
+		m_component_containers[c.first]->erase(c.second);
+	}
+}
+
+void ComponentManager::Clear()
+{
+	m_compManager_allocator.clear();
+}
 
 memory::StackAllocator ComponentManager::m_compManager_allocator{
 	memory::MemoryManager::NewMemoryUser(typeid(ComponentManager).name(), 2 * MAX_CONTAINER_COUNT * MEBIBYTE), 2 * MAX_CONTAINER_COUNT * MEBIBYTE };
 
 std::map<ComponentTypeID, ComponentManager::IComponentContainer*> ComponentManager::m_component_containers;
 
-//std::mutex ComponentManager::s_compManager_mutex;
-
-event<const entityID&, const ComponentTypeID&, IComponent*>	ComponentManager::OnComponentAdded;
-event<const entityID&, const ComponentTypeID&>				ComponentManager::OnComponentRemoved;
+event<Entity*, const ComponentTypeID&, IComponent*>	ComponentManager::OnComponentAdded;
+event<Entity*, const ComponentTypeID&>				ComponentManager::OnComponentRemoved;
 
 }//namespace RECS
 

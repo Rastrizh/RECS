@@ -37,7 +37,7 @@ public:
 		if (m_curr_offset + size > m_stats.total_size)
 			return nullptr;
 		size_t curr_address = (size_t)m_start_ptr + m_curr_offset;
-		u8 adjustment = calculateAdjustment(curr_address, alignment);
+		size_t adjustment = calculateAdjustment(curr_address, alignment);
 		curr_address += adjustment;
 		m_curr_offset += size + adjustment;
 		updateStats(size);

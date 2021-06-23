@@ -4,7 +4,8 @@
 #include "RECSTypes.h"
 #include <list>
 
-namespace RECS{
+namespace RECS {
+
 template<class T>
 struct IDProvider
 {
@@ -24,10 +25,12 @@ public:
 			return ID;
 		}
 	}
+
 	static void Remove(const IDType& id)
 	{
 		freeID.push_back(id);
 	}
+
 	static bool isDeletedID(const IDType& id) { return std::find(freeID.begin(), freeID.end(), id) != freeID.end() ? true : false; }
 public:
 	static IDType counter;

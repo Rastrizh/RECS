@@ -29,33 +29,19 @@ class ComponentHandle
 public:
 	ComponentHandle()
 		: component(nullptr)
-	{
-	}
+	{ }
 
 	ComponentHandle(T* component)
 		: component(component)
-	{
-	}
+	{ }
 
-	T* operator->() const
-	{
-		return component;
-	}
+	inline T* operator->() const {	return component; }
 
-	operator bool() const
-	{
-		return isValid();
-	}
+	inline operator bool() const {	return isValid(); }
 
-	T& get()
-	{
-		return *component;
-	}
+	inline T&  get() { return *component; }
 
-	bool isValid() const
-	{
-		return component != nullptr;
-	}
+	inline bool isValid() const { return component != nullptr;	}
 
 private:
 	T* component;

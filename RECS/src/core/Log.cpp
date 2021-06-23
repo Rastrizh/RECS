@@ -6,4 +6,4 @@ void Log::Init()
 }
 
 
-std::shared_ptr<spdlog::logger> Log::s_logger = spdlog::stdout_color_mt("s_logger");
+RECS::ref<spdlog::logger> Log::s_logger = spdlog::stdout_color_mt("s_logger");

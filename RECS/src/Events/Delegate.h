@@ -46,15 +46,9 @@ public:
 			m_func(params...);
 	}
 
-	operator bool() const
-	{
-		return m_func;
-	}
+	inline operator bool() const {	return m_func; }
 
-	bool operator==(const delegate& rhs) const
-	{
-		return m_func == rhs.m_func;
-	}
+	inline bool operator==(const delegate& rhs) const { return m_func == rhs.m_func; }
 };
 }
 

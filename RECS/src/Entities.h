@@ -51,20 +51,16 @@ public:
 		((T*)new_component)->ownerID = this->ID;
 		((T*)new_component)->ID = IDProvider<T>::Get();
 		m_components[T::GetTypeID()] = ((T*)new_component)->ID;
-		//ComponentManager::OnComponentAdded(this->ID, T::GetTypeID(), new_component);
 	}
 	template<typename T>
 	void DeleteComponent()
 	{
 		ComponentManager::DeleteComponent<T>(T::GetTypeID(), m_components[T::GetTypeID()]);
 		m_components.erase(T::GetTypeID());
-		//ComponentManager::OnComponentRemoved(this->ID, T::GetTypeID());
 	}
 	template<class T>
 	typename ComponentHandle<T> GetComponent()
 	{
-		//for(auto & f : ComponentManager::OnComponentAdded().m_Futures)
-		//	f.wait();
 		return ComponentHandle<T>(ComponentManager::GetComponent<T>(getComponentID<T>()));
 	}
 	template<class T>
@@ -81,8 +77,9 @@ public:
 	}
 
 	template<typename T>
-	const componentID& getComponentID() { return m_components[T::GetTypeID()]; }
-	const componentsTable& getComponentsTable() const { return m_components; }
+	const inline componentID& getComponentID() { return m_components[T::GetTypeID()]; }
+
+	const inline componentsTable& getComponentsTable() const { return m_components; }
 };
 }
 #endif // !ENTITY_H

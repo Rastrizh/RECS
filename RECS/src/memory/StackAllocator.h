@@ -47,7 +47,7 @@ public:
 
 		size_t header_address = next_address - sizeof(Header);
 		Header* h_ptr = (Header*)header_address;
-		(*h_ptr).adj = adjustment;
+		(*h_ptr).adj = (u8)adjustment;
 
 		updateStats(size + adjustment);
 		return (void*)next_address;

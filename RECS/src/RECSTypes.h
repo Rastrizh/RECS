@@ -12,6 +12,7 @@
 
 #include <cstdlib>
 #include <cstdint>
+#include <memory>
 
 namespace RECS {
 
@@ -49,6 +50,7 @@ namespace RECS {
 	using IDType = u32;
 	using ComponentTypeID = size_t;
 
-#define MAX_ENTITY_COUNT 1000000
+	template<typename T>
+	using ref = std::shared_ptr<T>;
 }
 #endif // !RECSTYPES_H

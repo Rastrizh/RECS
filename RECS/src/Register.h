@@ -31,30 +31,17 @@ public:
 
 public:
 
-	static Entity* CreateEntity()
-	{
-		return EntityManager::CreateEntity();
-	}
+	static Entity*	CreateEntity();
+	static void			KillEntity(Entity* e);
+	static void			KillAllEntities();
 
-	static size_t EntityCount() { return EntityManager::EntityCount(); }
-
-	static void KillEntity(Entity* e)
-	{
-		ComponentManager::DeleteEntityComponents(e);
-		EntityManager::DeleteEntity(e);
-		OnEntityDestroyed(e);
-	}
-	static void KillAllEntities()
-	{
-		EntityManager::DeleteAll();
-		ComponentManager::Clear();
-	}
+	static size_t		EntityCount();
 
 	template<typename ...Types>
 	static void each(std::common_type_t<std::function<void(Entity*, ComponentHandle<Types>...)>> view)
 	{
 		auto count = EntityManager::TotalEntities();
-		for (size_t i = 0; i < count; i++)
+		for (entityID i = 0; i < count; i++)
 		{
 			auto e = EntityManager::GetEntity(i);
 			if(e && e->isUpdateble && e->HasComponent<Types...>())
@@ -68,7 +55,7 @@ public:
 	{
 		std::vector<Entity*> view;
 		auto count = EntityManager::TotalEntities();
-		for (size_t i = 0; i < count; i++)
+		for (entityID i = 0; i < count; i++)
 		{
 			auto e = EntityManager::GetEntity(i);
 			if (e && e->isUpdateble && e->HasComponent<Types...>())
@@ -77,6 +64,29 @@ public:
 		return view;
 	}
 };
+
+Entity* Engine::CreateEntity()
+{
+	return EntityManager::CreateEntity();
+}
+
+size_t Engine::EntityCount()
+{
+	return EntityManager::EntityCount();
+}
+
+void Engine::KillEntity(Entity* e)
+{
+	ComponentManager::DeleteEntityComponents(e);
+	EntityManager::DeleteEntity(e);
+	OnEntityDestroyed(e);
+}
+
+void Engine::KillAllEntities()
+{
+	EntityManager::DeleteAll();
+	ComponentManager::Clear();
+}
 
 std::mutex Engine::s_Engine_lock;
 
