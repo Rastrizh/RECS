@@ -43,7 +43,7 @@ protected:
 			m_container_allocator(ptr, sizeof(T) * MAX_ENTITY_COUNT, "Component container")
 		{
 			assert(ptr && "Pointer is nullptr");
-			//RINFO("Component container of {}", typeid(T).name());
+			RINFO("Create component container of {}", typeid(T).name());
 		}
 		template<class ...P>
 		IComponent* emplace(P&&... params)
@@ -112,7 +112,6 @@ private:
 	template<class T>
 	static ComponentContainer<T>* CreateComponentContainer()
 	{
-		//std::lock_guard<std::mutex> lock(s_compManager_mutex);
 		auto ret = new ComponentContainer<T>(m_compManager_allocator.allocate(sizeof(T) * MAX_ENTITY_COUNT, alignof(T)));
 		m_component_containers[T::GetTypeID()] = (IComponentContainer*)ret;
 		return ret;

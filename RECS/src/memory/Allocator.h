@@ -12,7 +12,13 @@
 
 namespace RECS { namespace memory {
 
-size_t calculateAdjustment(const uintptr_t& address, const uintptr_t& align);
+size_t calculateAdjustment(const uintptr_t& address, const uintptr_t& align)
+{
+	uintptr_t adjust = address % align;
+	if (adjust != 0)
+		adjust = align - adjust;
+	return adjust;
+}
 
 struct AllocatorStats
 {
@@ -37,6 +43,11 @@ struct AllocatorStats
 	}
 	friend std::ostream& operator<<(std::ostream& out, const memory::AllocatorStats& stats);
 };
+
+std::ostream& operator<<(std::ostream& out, const memory::AllocatorStats& stats)
+{
+	return out << stats.ToString();
+}
 
 class Allocator
 {

@@ -17,6 +17,13 @@ private:
 	static RECS::ref<spdlog::logger> s_logger;
 };
 
+void Log::Init()
+{
+	s_logger->set_level(spdlog::level::debug);
+}
+
+RECS::ref<spdlog::logger> Log::s_logger = spdlog::stdout_color_mt("s_logger");
+
 #define RTRACE(...) Log::GetLogger()->trace(__VA_ARGS__)
 #define RINFO(...)  Log::GetLogger()->info(__VA_ARGS__)
 #define RWARN(...)  Log::GetLogger()->warn(__VA_ARGS__)
