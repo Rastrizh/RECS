@@ -36,16 +36,15 @@ public:
 			}
 		);
 	}
+	
+	auto call_asunc(TArgs...params) const ->std::future<void>
+	{
+		return std::async(std::launch::async, &event::call_impl, &(*this), std::forward<TArgs>(params)...);
+  }
 
 	void call(TArgs... params) const
 	{
 		call_impl(std::forward<TArgs>(params)...);
-	}
-
-	void call_asunc(TArgs...params) const
-	{
-		auto f = std::move(std::async(std::launch::async, &event::call, this, std::forward<TArgs>(params)...));
-		f.get();
 	}
 
 	event& operator +=(void(*func)(TArgs...))
