@@ -47,12 +47,6 @@ public:
 		call_impl(std::forward<TArgs>(params)...);
 	}
 
-	void call_asunc(TArgs...params) const
-	{
-		auto f = std::move(std::async(std::launch::async, &event::call, this, std::forward<TArgs>(params)...));
-		f.get();
-	}
-
 	event& operator +=(void(*func)(TArgs...))
 	{
 		Connect(delegateType(func));
