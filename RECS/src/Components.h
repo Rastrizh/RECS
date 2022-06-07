@@ -1,31 +1,51 @@
 #ifndef COMPONENTS_H
 #define COMPONENTS_H
 
-#include <unordered_map>
-#include <typeinfo>
-#include "RECSTypes.h"
+#include <typeindex>
+#include "IDProvider.h"
 
 namespace RECS {
 
-	class IComponent
-	{
-	public:
-		virtual ~IComponent() = default;
-	}; // Class IComponent
+class IComponent
+{};
 
-	template<class T>
-	class Component : public IComponent
+template<class T>
+class Component : public IComponent
+{
+public:
+	entityID ownerID;
+	componentID ID;
+public:
+	~Component()
 	{
-	public:
-		~Component() override = default;
-	private:
-		static const size_t STATIC_COMONENT_TYPE_ID;
-	public:
-		static auto GetTypeID() -> size_t { return STATIC_COMONENT_TYPE_ID; }
-	}; // Class Component
+		IDProvider<T>::Remove(this->ID);
+	}
+	static auto GetTypeID() -> size_t { return typeid(T).hash_code(); }
+}; // Class Component
 
-	template<class T>
-	const size_t Component<T>::STATIC_COMONENT_TYPE_ID = typeid(T).hash_code();
+template<typename T>
+class ComponentHandle
+{
+public:
+	ComponentHandle()
+		: component(nullptr)
+	{ }
+
+	ComponentHandle(T* component)
+		: component(component)
+	{ }
+
+	inline T* operator->() const {	return component; }
+
+	inline operator bool() const {	return isValid(); }
+
+	inline T&  get() { return *component; }
+
+	inline bool isValid() const { return component != nullptr;	}
+
+private:
+	T* component;
+};
 
 }
 #endif // !COMPONENTS_H

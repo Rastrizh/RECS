@@ -1,7 +1,6 @@
 #ifndef DELEGATE_H
 #define DELEGATE_H
 
-#include <functional>
 #include <utility>
 
 namespace RECS {
@@ -9,10 +8,11 @@ namespace RECS {
 template <typename... TArgs>
 class delegate
 {
-	using functionType = std::function<void(TArgs...)>;
-private:
+	using functionType = void (*)(TArgs...);
+public:
 	functionType m_func;
 public:
+	delegate() = default;
 	explicit delegate(const functionType& func)
 		:
 		m_func(func)
@@ -46,21 +46,9 @@ public:
 			m_func(params...);
 	}
 
-	operator bool() const
-	{
-		return m_func;
-	}
+	inline operator bool() const {	return m_func; }
 
-	bool operator==(const delegate& rhs) const
-	{
-		return Hash() == rhs.Hash();
-	}
-
-private:
-	size_t Hash(const functionType& func)
-	{
-		return func.target_type().hash_code();
-	}
+	inline bool operator==(const delegate& rhs) const { return m_func == rhs.m_func; }
 };
 }
 

@@ -1,21 +1,22 @@
 #ifndef EVENT_H
 #define EVENT_H
 
+#include "Delegate.h"
 #include <list>
 #include <functional>
 #include <utility>
 #include <future>
 
 namespace RECS {
-
 template<class... TArgs>
 class event
 {
-	using delegateType = std::function<void(TArgs...)>;
 private:
+	using delegateType = delegate<TArgs...>;
 	std::list<delegateType> m_delegateList;
-	std::vector<std::future<void>> m_Futures;
 	mutable std::mutex m_delegateLocker;
+public:
+	std::list<std::future<void>> m_Futures;
 
 public:
 	void Connect(const delegateType& _delegate)
@@ -39,29 +40,39 @@ public:
 	auto call_asunc(TArgs...params) const ->std::future<void>
 	{
 		return std::async(std::launch::async, &event::call_impl, &(*this), std::forward<TArgs>(params)...);
+  }
+
+	void call(TArgs... params) const
+	{
+		call_impl(std::forward<TArgs>(params)...);
 	}
 
-	auto operator +=(const delegateType& _delegate)->event&
+	void call_asunc(TArgs...params) const
 	{
-		Connect(_delegate);
+		auto f = std::move(std::async(std::launch::async, &event::call, this, std::forward<TArgs>(params)...));
+		f.get();
+	}
+
+	event& operator +=(void(*func)(TArgs...))
+	{
+		Connect(delegateType(func));
 		return *this;
 	}
 	
-	auto operator -=(const delegateType& _delegate)->event&
+	event& operator -=(void(*func)(TArgs...))
 	{
-		Remove(_delegate);
+		Remove(delegateType(func));
 		return *this;
 	}
 
 	inline void operator()(TArgs...args)
 	{
-		std::lock_guard<std::mutex> Lock(m_delegateLocker);
-		m_Futures.push_back(call_asunc(std::forward<TArgs>(args)...));
+		call_asunc(std::forward<TArgs>(args)...);
 	}
 
-	auto operator==(const delegateType& rhs) const ->bool
+	bool operator==(const delegateType& rhs) const
 	{
-		return Hash() == rhs.Hash();
+		return delegateType == rhs.delegateType;
 	}
 
 private:
@@ -71,18 +82,6 @@ private:
 		{
 			_delegate(std::forward<TArgs>(params)...);
 		}
-	}
-
-	auto get_delegates_copy() const ->std::list<delegateType>
-	{
-		std::lock_guard<std::mutex> lock(m_delegateLocker);
-
-		return m_delegateList;
-	}
-
-	auto Hash(const delegateType& func)->size_t
-	{
-		return func.target_type().hash_code();
 	}
 };
 }

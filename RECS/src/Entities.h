@@ -1,63 +1,85 @@
-#ifndef ENTITIES_H
-#define ENTITIES_H
+#ifndef ENTITY_H
+#define ENTITY_H
 
-#include <set>
+#include "IDProvider.h"
 #include "Events/Event.h"
-#include "RECSTypes.h"
-#include "EntityContainer.h"
-#include "ComponentContainer.h"
+
+#define MAX_ENTITY_COUNT 10000
+
+#include <map>
 
 namespace RECS {
-	class ComponentContainer;
 
-	class Entity
+class ComponentManager;
+class IComponent;
+
+class Entity
+{
+private:
+	using componentsTable = std::map<ComponentTypeID, componentID>;
+	componentsTable m_components;
+public:
+	entityID ID;
+	bool isUpdateble;
+	bool isDrawable;
+	bool isAlive;
+
+public:
+	Entity()
+		: ID(IDProvider<Entity>::Get()),
+		isUpdateble(true),
+		isDrawable(true),
+		isAlive(true)
 	{
-	public:
-		EntityID entityID;
+	}
+	Entity(const Entity& e)
+		: ID(e.ID),
+		isUpdateble(e.isUpdateble),
+		isDrawable(true),
+		isAlive(true)
+	{
+	}
+	~Entity()
+	{
+		IDProvider<Entity>::Remove(this->ID);
+	}
 
-	private:
-		static EntityID IDCounetr;
-		static std::set<EntityID> freeIDs;
-		ComponentContainer *m_componentContainerInstance;
-
-	public:
-		event<Entity*, ComponentType> OnComponentAdded;
-		event<Entity*, ComponentType> OnComponentRemoved;
-
-	public:
-		Entity();
-		~Entity();
-		
-		template<typename T>
-		void DeleteComponent()
-		{
-			m_componentContainerInstance->DeleteComponent<T>(entityID);
-			OnComponentRemoved(this, T::GetTypeID());
-		}
-
-		template<typename T, class ... P>
-		void AddComponent(P&&... params)
-		{
-			m_componentContainerInstance->AddComponent<T>(entityID, std::forward<P>(params)...);
-			OnComponentAdded(this, T::GetTypeID());
-		}
-
-		template<typename T>
-		auto GetComponent() ->T*
-		{
-			return m_componentContainerInstance->GetComponent<T>(entityID);
-		}
-
-		/*auto HasComponent(ComponentType componentTypeId) ->bool
-		{
-			auto comp = EntityContainer::instance().m_ComponentLists.find(this);
-			auto it = std::find(comp->second.begin(), comp->second.end(), componentTypeId);
-
-			if (it != comp->second.end())
-				return true;
-
+	template<typename T, class ... P>
+	void AddComponent(P&&... params)
+	{
+		IComponent* new_component = ComponentManager::AddComponent<T>(std::forward<P>(params)...);
+		((T*)new_component)->ownerID = this->ID;
+		((T*)new_component)->ID = IDProvider<T>::Get();
+		m_components[T::GetTypeID()] = ((T*)new_component)->ID;
+	}
+	template<typename T>
+	void DeleteComponent()
+	{
+		ComponentManager::DeleteComponent<T>(T::GetTypeID(), m_components[T::GetTypeID()]);
+		m_components.erase(T::GetTypeID());
+	}
+	template<class T>
+	typename ComponentHandle<T> GetComponent()
+	{
+		return ComponentHandle<T>(ComponentManager::GetComponent<T>(getComponentID<T>()));
+	}
+	template<class T>
+	bool HasComponent() const
+	{
+		if (m_components.empty())
 			return false;
-		}*/
-	};
+		return m_components.find(T::GetTypeID()) != m_components.end();
+	}
+	template<class T, class V, class ...Types>
+	bool HasComponent() const
+	{
+		return HasComponent<T>() && HasComponent<V, Types...>();
+	}
+
+	template<typename T>
+	const inline componentID& getComponentID() { return m_components[T::GetTypeID()]; }
+
+	const inline componentsTable& getComponentsTable() const { return m_components; }
+};
 }
-#endif // !ENTITIES_H
+#endif // !ENTITY_H
